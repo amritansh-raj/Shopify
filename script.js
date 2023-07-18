@@ -28,7 +28,7 @@ myApp.config(function ($stateProvider, $urlRouterProvider) {
     });
 });
 
-myApp.controller("indexController", function ($scope, $http) {
+myApp.controller("indexController", function ($scope, $http, $state) {
   $scope.showLoginPopup = function () {
     Swal.fire({
       title: `<p class="text-center h1 fw-bold mb-3 mx-1 mx-md-4 mt-4">
@@ -74,10 +74,20 @@ myApp.controller("indexController", function ($scope, $http) {
 
         console.log(loginData);
 
-        $http
-          .post(apiUrl + "/shopify/login", loginData)
+        $http({
+            method: 'POST',
+            url: 'http://10.21.82.46:8000/shopify/login/',
+            data: loginData
+          })
           .then(function (response) {
-            console.log(response);
+            var register = (response.data.superuser);
+            superuser = register;
+
+            if(superuser){
+                $state.go("manager");
+            } else{
+                $state.go("Home");
+            }
           })
           .catch(function (error) {
             console.log("error", error);
@@ -144,22 +154,22 @@ myApp.controller("indexController", function ($scope, $http) {
           !address
         ) {
           Swal.showValidationMessage("Please fill all the fields");
-          return false;
+          return;
         }
 
         if (!validateEmail(email)) {
           Swal.showValidationMessage("Invalid email address");
-          return false;
+          return;
         }
 
         if (!validateContact(contact)) {
           Swal.showValidationMessage("Invalid Contact");
-          return false;
+          return;
         }
 
         if (password !== confirmPassword) {
           Swal.showValidationMessage("Password does not match");
-          return false;
+          return;
         }
 
         var registerData = {
@@ -171,8 +181,11 @@ myApp.controller("indexController", function ($scope, $http) {
           confirmPassword: confirmPassword,
         };
 
-        $http
-          .post(apiUrl + "/shopify/register", registerData)
+        $http({
+            method: 'POST',
+            url: 'http://10.21.82.46:8000/shopify/register/',
+            data: registerData
+          })
           .then(function (response) {
             console.log(response);
           })
@@ -201,18 +214,14 @@ myApp.controller("indexController", function ($scope, $http) {
   }
 
   $(document).on("click", "#addItemBtn", function (event) {
-    if (!userLoggedIn) {
+    
       event.preventDefault();
 
       $scope.showLoginPopup();
-    }
+    
   });
 });
 
 myApp.controller("managerController", function ($scope) {
-  $scope.panels = [{ showDropdown: false }, { showDropdown: false }];
-
-  $scope.toggleDropdown = function (panel) {
-    panel.showDropdown = !panel.showDropdown;
-  };
+    
 });
