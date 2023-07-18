@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopify</title>
+    <link rel="stylesheet" href="/style/managerStyle.css">
 </head>
-<body>
+<body ng-controller="managerController">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand logo-Img" href="#">
             <img src="media/logo.png" width="150" height="70" class="d-inline-block align-top" alt="Logo">
@@ -19,11 +20,11 @@
                 <input class="form-control mr-sm-2 search-input" type="search" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-light my-2 my-sm-0 search-Btn" type="submit">Search</button>
             </form>
-            <!-- <ul class="navbar-nav ml-auto">
+            <ul class="navbar-nav ml-auto">
                 <li class="nav-item login-Btn">
-                    <a class="nav-link login-Btn" href="#">Add </a>
+                    <a class="nav-link login-Btn" href="#">Create section </a>
                 </li>
-            </ul> -->
+            </ul>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item login-Btn">
                     <a class="nav-link login-Btn" href="#" ng-click="showLoginPopup()">Logout</a>
@@ -32,13 +33,53 @@
         </div>
     </nav>
     <div>
-        <section class="h-100 " style="background-color: #eee">
-            <div class="container h-100">
-                <div class="row d-flex h-100">
-                
+        <section class="h-100" style="background-color: #eee">
+          <div class="container h-100">
+            <div class="row d-flex h-100">
+              <div class="row">
+                <div class="heading">
+                  <h1>Sections</h1>
                 </div>
+                <div class="row" ng-repeat="panel in panels">
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      class="form-control"
+                      placeholder="Section_name"
+                      aria-label="Recipient's username"
+                      aria-describedby="basic-addon2"
+                      disabled
+                    />
+                    <button class="btn btn-outline-secondary" type="button">Edit</button>
+                    <button
+                      class="btn btn-outline-primary"
+                      type="button"
+                      ng-click="toggleDropdown(panel)"
+                    >
+                      Show
+                    </button>
+                  </div>
+                  <div class="panel panel-default" ng-show="panel.showDropdown">
+                    <div class="col-md-3">
+                      <div class="card" style="width: 18rem;">
+                        <img src="media/productImgs/apple.jpg" class="card-img-top" alt="..." />
+                        <div class="card-body">
+                          <h5 class="card-title">Apple</h5>
+                          <p class="card-text">
+                            Some quick example text to build on the card title and make up the bulk of the card's content.
+                          </p>
+                          <button href="#" class="btn btn-primary" disabled>$25</button>
+                          <a href="#" class="btn btn-primary">Add item</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
         </section>
-    </div>
+      </div>
+      
 </body>
 </html>
