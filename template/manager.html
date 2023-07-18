@@ -6,7 +6,7 @@
     <title>Shopify</title>
     <link rel="stylesheet" href="/style/managerStyle.css">
 </head>
-<body ng-controller="managerController">
+<body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand logo-Img" href="#">
             <img src="media/logo.png" width="150" height="70" class="d-inline-block align-top" alt="Logo">
@@ -22,7 +22,7 @@
             </form>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item login-Btn">
-                    <a class="nav-link login-Btn" href="#">Create section </a>
+                    <a class="nav-link login-Btn" href="#" ng-click="showCreateSection($event)">Create section</a>  
                 </li>
             </ul>
             <ul class="navbar-nav ml-auto">
@@ -97,6 +97,9 @@
             </div>
         </section>
     </div>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.4/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.26/angular-ui-router.min.js"></script>    
+    <script src="script.js"></script>
 </body>
 </html>

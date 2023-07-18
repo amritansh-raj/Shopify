@@ -1,5 +1,4 @@
-var myApp = angular.module("myApp", ["ui.router"]);
-userLoggedIn = false;
+var myApp = angular.module("myApp", ["ui.router"]); 
 var apiUrl = "http://10.21.82.46:8000";
 
 myApp.config(function ($stateProvider, $urlRouterProvider) {
@@ -29,6 +28,7 @@ myApp.config(function ($stateProvider, $urlRouterProvider) {
 });
 
 myApp.controller("indexController", function ($scope, $http, $state) {
+
   $scope.showLoginPopup = function () {
     Swal.fire({
       title: `<p class="text-center h1 fw-bold mb-3 mx-1 mx-md-4 mt-4">
@@ -187,6 +187,7 @@ myApp.controller("indexController", function ($scope, $http, $state) {
             data: registerData
           })
           .then(function (response) {
+            userLoggedIn = true;
             console.log(response);
           })
           .catch(function (error) {
@@ -223,5 +224,65 @@ myApp.controller("indexController", function ($scope, $http, $state) {
 });
 
 myApp.controller("managerController", function ($scope) {
-    
-});
+    $scope.showCreateSection = function (event) {
+      event.preventDefault();
+  
+      Swal.fire({
+        title: 'Create Section',
+        html:
+          '<div id="dropZone" style="border: 2px dashed gray; padding: 20px; text-align: center;">' +
+          '  <p>Drag and drop an image file here</p>' +
+          '</div>' +
+          '<input id="sectionName" class="swal2-input" placeholder="Section Name">',
+        confirmButtonText: 'Create',
+        showCancelButton: true,
+        cancelButtonText: 'Cancel',
+        onOpen: function () {
+          var dropZone = document.getElementById('dropZone');
+          
+          dropZone.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            dropZone.style.backgroundColor = 'lightgray';
+          });
+          
+          dropZone.addEventListener('dragleave', function (e) {
+            e.preventDefault();
+            dropZone.style.backgroundColor = '';
+          });
+          
+          dropZone.addEventListener('drop', function (e) {
+            e.preventDefault();
+            dropZone.style.backgroundColor = '';
+            var files = e.dataTransfer.files;
+            handleFiles(files);
+          });
+        },
+        preConfirm: function () {
+          return new Promise(function (resolve) {
+            resolve([
+              document.getElementById('sectionName').value,
+              sectionImage
+            ]);
+          });
+        }
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          var sectionName = result.value[0];
+          var sectionImage = result.value[1];
+          
+          console.log(sectionName);
+          console.log(sectionImage);
+        }
+      });
+      
+      function handleFiles(files) {
+        var reader = new FileReader();
+        reader.onload = function () {
+          sectionImage = reader.result;
+        };
+        reader.readAsDataURL(files[0]);
+      }
+    };
+  });
+  
+  
