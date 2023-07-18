@@ -1,33 +1,56 @@
 var myApp = angular.module("myApp", ["ui.router"]);
+userLoggedIn = false;
 
 myApp.config(function ($stateProvider, $urlRouterProvider) {
-  $urlRouterProvider.otherwise("/index");
+  $urlRouterProvider.otherwise("/Home");
 
-  $stateProvider
-    .state("index", {
-      url: "/index",
-      templateUrl: "index.html",
-      controller: "indexController",
-    })
-    .state("login", {
-      url: "/login",
-      templateUrl: "template/login.html",
-      controller: "loginController",
-    })
-    .state("register", {
-      url: "/register",
-      templateUrl: "template/register.html",
-      controller: "indexController",
-    });
+  $stateProvider.state("Home", {
+    url: "/Home",
+    templateUrl: "index.html",
+    controller: "indexController",
+  })
+  .state("Products", {
+    url: "/Products",
+    templateUrl: "template/products.html",
+    controller: "productController",
+  })
+  .state("category", {
+    url: "/Category",
+    templateUrl: "template/category.html",
+    controller: "categoryController",
+  })
+  .state("manager", {
+    url: "/manager",
+    templateUrl: "template/manager.html",
+    controller: "managerController",
+  });
 });
 
 myApp.controller("indexController", function ($scope) {
   $scope.showLoginPopup = function () {
     Swal.fire({
-      title: "Login or Register",
+      title: `<p class="text-center h1 fw-bold mb-3 mx-1 mx-md-4 mt-4">
+      Login or Register
+    </p>`,
       html: `
-            <input type="text" id="username" class="swal2-input" placeholder="Username" required>
-            <input type="password" id="password" class="swal2-input" placeholder="Password" required>
+      <div class="form-floating mb-3">
+        <input
+          type="email"
+          class="form-control"
+          id="username"
+          placeholder="Username"
+        />
+        <label >Email</label>
+      </div>
+      <div class="form-floating mb-3">
+        <input
+          type="password"
+          class="form-control"
+          placeholder="Password"
+          id="password"
+        />
+        <label>Password</label>
+      </div>
           `,
       showCancelButton: true,
       confirmButtonText: "Login",
@@ -59,10 +82,22 @@ myApp.controller("indexController", function ($scope) {
     Swal.fire({
       title: "Register",
       html: `
-            <input type="text" id="username" class="swal2-input" placeholder="Username" required>
-            <input type="email" id="email" class="swal2-input" placeholder="email@example.com" required>
-            <input type="password" id="password" class="swal2-input" placeholder="Password">
-            <input type="password" id="confirmPassword" class="swal2-input" placeholder="Confirm Password">
+        <div class="form-floating mb-3">
+            <input type="text" id="username" class="form-control" placeholder="Username">
+            <label >Username</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="email" id="email" class="form-control" placeholder="email@example.com" required>
+            <label >Email</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="password" id="password" class="form-control" placeholder="Password">
+            <label >Password</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm Password">
+            <label >Confirm Password</label>
+        </div>
           `,
       showCancelButton: true,
       confirmButtonText: "Register",
@@ -83,7 +118,6 @@ myApp.controller("indexController", function ($scope) {
         var emailField = Swal.getPopup().querySelector("#email");
 
         if (!validateEmail(email)) {
-          // Validate email using the validateEmail function
           Swal.showValidationMessage("Invalid email address");
           return false;
         }
@@ -121,4 +155,6 @@ myApp.controller("indexController", function ($scope) {
   });
 });
 
-myApp.controller("loginController", function ($scope) {});
+myApp.controller("managerController", function($scope){
+    
+})

@@ -19,8 +19,8 @@
   }
 
   .right-div {
-    overflow-y: auto;
-    height: 100vh; 
+    /* overflow-y: auto; */
+    height: calc(100vh - 70px);
   }
 
   .login-Btn{
@@ -46,4 +46,24 @@
   .card-img-top{
     height: 300px;
     width: 100%;
+  }
+
+  .category{
+    margin-top: 50px;
+  }
+
+  .card-img {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+  }
+
+  .blur-image {
+    filter: blur(2px);
+  }
+
+  .category-card-link{
+    text-decoration: none;
+    color: aliceblue;
+    text-shadow: 2px 2px black;
   }
