@@ -1,4 +1,4 @@
-var myApp = angular.module("myApp", ["ui.router","ngCookies"]);
+var myApp = angular.module("myApp", ["ui.router", "ngCookies"]);
 var apiUrl = "http://10.21.82.46:8000/shopify/";
 // var apiUrl = "http://10.21.81.203:8000/"
 
@@ -30,17 +30,21 @@ myApp.config(function ($stateProvider, $urlRouterProvider) {
       url: "/cart",
       templateUrl: "template/cart.html",
       controller: "cartController",
+    })
+    .state("addProduct", {
+      url: "/addProduct",
+      templateUrl: "template/addProduct.html",
+      controller: "addProductController",
     });
 });
 
 myApp.controller("indexController", function ($scope, $http, $state, $cookies) {
-
   $scope.userLoggedIn = false;
 
-    var authToken = $cookies.get('authToken');
-    if(authToken){
-      $scope.userLoggedIn = true;
-    }
+  var authToken = $cookies.get("authToken");
+  if (authToken) {
+    $scope.userLoggedIn = true;
+  }
 
   $scope.showLoginPopup = function () {
     Swal.fire({
@@ -96,9 +100,9 @@ myApp.controller("indexController", function ($scope, $http, $state, $cookies) {
           .then(function (response) {
             $scope.userLoggedIn = true;
             var authToken = response.data.authToken;
-            $cookies.put('authToken', authToken);
+            $cookies.put("authToken", authToken);
 
-            var register = response.data.authenticate_id;
+            var register = response.data.superuser;
             superuser = register;
 
             console.log(response);
@@ -123,25 +127,26 @@ myApp.controller("indexController", function ($scope, $http, $state, $cookies) {
 
     $(document).on("click", "#addItemBtn", function (event) {
       event.preventDefault();
-  
+
       $scope.showLoginPopup();
     });
   };
 
-  $scope.logout = function(){
+  $scope.logout = function () {
     $scope.userLoggedIn = false;
 
     $http({
       method: "GET",
-      url: apiUrl + 'logout/',
-    }).then(function(response){
-      console.log(response);
+      url: apiUrl + "logout/",
     })
-    .catch(function(error ){
-      console.log(error);
-    })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
     $state.go("Home");
-  }
+  };
 
   $scope.showRegisterPopup = function () {
     Swal.fire({
@@ -260,61 +265,59 @@ myApp.controller("indexController", function ($scope, $http, $state, $cookies) {
   });
 });
 
-myApp.controller("managerController", function ($scope, $http, $cookies, $window) {
+myApp.controller(
+  "managerController",
+  function ($scope, $http, $cookies, $window) {
+    $scope.showCreateSection = function (event) {
+      event.preventDefault();
 
-  $scope.showCreateSection = function (event) {
-    event.preventDefault();
+      Swal.fire({
+        title: "Create Section",
+        html: `<div class="input-group">
+      <div class="custom-file">
+        <input type="file" class="custom-file-input" id="inputGroupFile04" accept="image/*">
+      </div>
+    </div>`,
+        confirmButtonText: "Create",
+        showCancelButton: true,
+        cancelButtonText: "Cancel",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          var sectionImage = document.getElementById("sectionImage").files[0];
 
-    if (!$cookies.get('authToken')) {
-      $window.location.href = '/login'; 
-      return;
-    }
+          var formData = new FormData();
+          formData.append("sectionImage", sectionImage);
 
-    Swal.fire({
-      title: "Create Section",
-      html: `<input id="sectionImage" type="file" class="swal2-file" accept="image/*">`,
-      confirmButtonText: "Create",
-      showCancelButton: true,
-      cancelButtonText: "Cancel",
-    }).then(function (result) {
-      if (result.isConfirmed) {
-        var sectionImage = document.getElementById("sectionImage").files[0];
-
-        var formData = new FormData();
-        formData.append('sectionImage', sectionImage);
-
-        $http({
-          method: 'POST',
-          // url: apiUrl + 'add_section/',
-          url: apiUrl + 'addcategory/',
-          headers: {
-            'Content-Type': undefined,
-            'Authorization': 'Bearer ' + $cookies.get('authToken')
-          },
-          transformRequest: angular.identity,
-          data: formData
-        })
-          .then(function (response) {
-            console.log(response.data);
-            
-            if (response.data.authenticate_id) {
-              $cookies.put('authToken', response.data.authenticate_id);
-              console.log("User is authenticated");
-            } else {
-              
-              console.log("User is not authenticated");
-            }
+          $http({
+            method: "POST",
+            // url: apiUrl + 'add_section/',
+            url: apiUrl + "addcategory/",
+            headers: {
+              "Content-Type": undefined,
+              Authorization: "Bearer " + $cookies.get("authToken"),
+            },
+            transformRequest: angular.identity,
+            data: formData,
           })
-          .catch(function (error) {
-            console.error(error);
-          });
-      }
-    });
-  };
-});
+            .then(function (response) {
+              console.log(response.data);
 
+              if (response.data.authenticate_id) {
+                $cookies.put("authToken", response.data.authenticate_id);
+                console.log("User is authenticated");
+              } else {
+                console.log("User is not authenticated");
+              }
+            })
+            .catch(function (error) {
+              console.error(error);
+            });
+        }
+      });
+    };
+  }
+);
 
-myApp.controller("cartController" , function($scope){
+myApp.controller("cartController", function ($scope) {});
 
-});
-
+myApp.controller("addProductController", function ($scope) {});
