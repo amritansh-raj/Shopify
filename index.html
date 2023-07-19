@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/style/style.css">
 </head>
 <body ng-app="myApp" ng-controller="indexController" ui-view>
@@ -25,14 +26,23 @@
             </form>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item login-Btn">
-                    <a class="nav-link login-Btn" href="#">Cart</a>
+                    <a class="nav-link login-Btn" ui-sref="Cart">
+                        <i class="bi bi-cart-fill"></i> Cart
+                    </a>                    
                 </li>
             </ul>
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item login-Btn">
-                    <a class="nav-link login-Btn" href="#" ng-click="showLoginPopup()">Login</a>
+                <li class="nav-item login-Btn" ng-hide="userLoggedIn">
+                    <a class="nav-link login-Btn" href="#" ng-click="showLoginPopup()"><i class="bi bi-box-arrow-in-right"></i>Login</a>
                 </li>
             </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item login-Btn" ng-show="userLoggedIn">
+                    <a class="nav-link login-Btn" href="#" ng-click="logout()">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                </li>
+            </ul>            
         </div>
     </nav>
     <div class="container-fluid">
@@ -79,7 +89,7 @@
                                     <h5 class="card-title">Apple</h5>
                                     <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
                                     <button href="#" class="btn btn-primary" disabled>$25</button>
-                                    <a href="#" class="btn btn-primary">Add item</a>
+                                    <a href="#" class="btn btn-primary"> <i class="bi bi-cart-fill"></i>Add item</a>
                                 </div>
                             </div>
                         </div>
@@ -90,7 +100,7 @@
                                     <h5 class="card-title">Banana</h5>
                                     <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
                                     <button href="#" class="btn btn-primary" disabled>$25</button>
-                                    <a href="#" class="btn btn-primary">Add item</a>
+                                    <a href="#" class="btn btn-primary"><i class="bi bi-cart-fill"></i>Add item</a>
                                 </div>
                             </div>
                         </div>
@@ -101,7 +111,7 @@
                                     <h5 class="card-title">Kiwi</h5>
                                     <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
                                     <button href="#" class="btn btn-primary" disabled>$25</button>
-                                    <a href="#" class="btn btn-primary">Add item</a>
+                                    <a href="#" class="btn btn-primary"><i class="bi bi-cart-fill"></i>Add item</a>
                                 </div>
                             </div>
                         </div>
@@ -112,7 +122,7 @@
                                     <h5 class="card-title">Pineapple</h5>
                                     <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
                                     <button href="#" class="btn btn-primary" disabled>$25</button>
-                                    <a href="#" class="btn btn-primary">Add item</a>
+                                    <a href="#" class="btn btn-primary"><i class="bi bi-cart-fill"></i>Add item</a>
                                 </div>
                             </div>
                         </div>
@@ -170,7 +180,8 @@
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.4/dist/sweetalert2.all.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.26/angular-ui-router.min.js"></script>    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.26/angular-ui-router.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-cookies/1.8.2/angular-cookies.min.js"></script>   
     <script src="script.js"></script>
 </body>
 </html>

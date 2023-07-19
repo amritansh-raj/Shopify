@@ -1,5 +1,6 @@
-var myApp = angular.module("myApp", ["ui.router"]); 
-var apiUrl = "http://10.21.82.46:8000";
+var myApp = angular.module("myApp", ["ui.router","ngCookies"]);
+var apiUrl = "http://10.21.82.46:8000/shopify/";
+// var apiUrl = "http://10.21.81.203:8000/"
 
 myApp.config(function ($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise("/Home");
@@ -24,10 +25,22 @@ myApp.config(function ($stateProvider, $urlRouterProvider) {
       url: "/manager",
       templateUrl: "template/manager.html",
       controller: "managerController",
+    })
+    .state("Cart", {
+      url: "/cart",
+      templateUrl: "template/cart.html",
+      controller: "cartController",
     });
 });
 
-myApp.controller("indexController", function ($scope, $http, $state) {
+myApp.controller("indexController", function ($scope, $http, $state, $cookies) {
+
+  $scope.userLoggedIn = false;
+
+    var authToken = $cookies.get('authToken');
+    if(authToken){
+      $scope.userLoggedIn = true;
+    }
 
   $scope.showLoginPopup = function () {
     Swal.fire({
@@ -75,18 +88,24 @@ myApp.controller("indexController", function ($scope, $http, $state) {
         console.log(loginData);
 
         $http({
-            method: 'POST',
-            url: 'http://10.21.82.46:8000/shopify/login/',
-            data: loginData
-          })
+          method: "POST",
+          // url: apiUrl + "custom_login/",
+          url: apiUrl + "login/",
+          data: loginData,
+        })
           .then(function (response) {
-            var register = (response.data.superuser);
+            $scope.userLoggedIn = true;
+            var authToken = response.data.authToken;
+            $cookies.put('authToken', authToken);
+
+            var register = response.data.authenticate_id;
             superuser = register;
 
-            if(superuser){
-                $state.go("manager");
-            } else{
-                $state.go("Home");
+            console.log(response);
+            if (superuser) {
+              $state.go("manager");
+            } else {
+              $state.go("Home");
             }
           })
           .catch(function (error) {
@@ -101,7 +120,28 @@ myApp.controller("indexController", function ($scope, $http, $state) {
         $scope.showRegisterPopup();
       }
     });
+
+    $(document).on("click", "#addItemBtn", function (event) {
+      event.preventDefault();
+  
+      $scope.showLoginPopup();
+    });
   };
+
+  $scope.logout = function(){
+    $scope.userLoggedIn = false;
+
+    $http({
+      method: "GET",
+      url: apiUrl + 'logout/',
+    }).then(function(response){
+      console.log(response);
+    })
+    .catch(function(error ){
+      console.log(error);
+    })
+    $state.go("Home");
+  }
 
   $scope.showRegisterPopup = function () {
     Swal.fire({
@@ -182,10 +222,10 @@ myApp.controller("indexController", function ($scope, $http, $state) {
         };
 
         $http({
-            method: 'POST',
-            url: 'http://10.21.82.46:8000/shopify/register/',
-            data: registerData
-          })
+          method: "POST",
+          url: apiUrl + "register/",
+          data: registerData,
+        })
           .then(function (response) {
             userLoggedIn = true;
             console.log(response);
@@ -193,7 +233,6 @@ myApp.controller("indexController", function ($scope, $http, $state) {
           .catch(function (error) {
             console.log("error", error);
           });
-
       },
       allowOutsideClick: function () {
         return !Swal.isLoading();
@@ -215,74 +254,67 @@ myApp.controller("indexController", function ($scope, $http, $state) {
   }
 
   $(document).on("click", "#addItemBtn", function (event) {
-    
-      event.preventDefault();
+    event.preventDefault();
 
-      $scope.showLoginPopup();
-    
+    $scope.showLoginPopup();
   });
 });
 
-myApp.controller("managerController", function ($scope) {
-    $scope.showCreateSection = function (event) {
-      event.preventDefault();
-  
-      Swal.fire({
-        title: 'Create Section',
-        html:
-          '<div id="dropZone" style="border: 2px dashed gray; padding: 20px; text-align: center;">' +
-          '  <p>Drag and drop an image file here</p>' +
-          '</div>' +
-          '<input id="sectionName" class="swal2-input" placeholder="Section Name">',
-        confirmButtonText: 'Create',
-        showCancelButton: true,
-        cancelButtonText: 'Cancel',
-        onOpen: function () {
-          var dropZone = document.getElementById('dropZone');
-          
-          dropZone.addEventListener('dragover', function (e) {
-            e.preventDefault();
-            dropZone.style.backgroundColor = 'lightgray';
+myApp.controller("managerController", function ($scope, $http, $cookies, $window) {
+
+  $scope.showCreateSection = function (event) {
+    event.preventDefault();
+
+    if (!$cookies.get('authToken')) {
+      $window.location.href = '/login'; 
+      return;
+    }
+
+    Swal.fire({
+      title: "Create Section",
+      html: `<input id="sectionImage" type="file" class="swal2-file" accept="image/*">`,
+      confirmButtonText: "Create",
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+    }).then(function (result) {
+      if (result.isConfirmed) {
+        var sectionImage = document.getElementById("sectionImage").files[0];
+
+        var formData = new FormData();
+        formData.append('sectionImage', sectionImage);
+
+        $http({
+          method: 'POST',
+          // url: apiUrl + 'add_section/',
+          url: apiUrl + 'addcategory/',
+          headers: {
+            'Content-Type': undefined,
+            'Authorization': 'Bearer ' + $cookies.get('authToken')
+          },
+          transformRequest: angular.identity,
+          data: formData
+        })
+          .then(function (response) {
+            console.log(response.data);
+            
+            if (response.data.authenticate_id) {
+              $cookies.put('authToken', response.data.authenticate_id);
+              console.log("User is authenticated");
+            } else {
+              
+              console.log("User is not authenticated");
+            }
+          })
+          .catch(function (error) {
+            console.error(error);
           });
-          
-          dropZone.addEventListener('dragleave', function (e) {
-            e.preventDefault();
-            dropZone.style.backgroundColor = '';
-          });
-          
-          dropZone.addEventListener('drop', function (e) {
-            e.preventDefault();
-            dropZone.style.backgroundColor = '';
-            var files = e.dataTransfer.files;
-            handleFiles(files);
-          });
-        },
-        preConfirm: function () {
-          return new Promise(function (resolve) {
-            resolve([
-              document.getElementById('sectionName').value,
-              sectionImage
-            ]);
-          });
-        }
-      }).then(function (result) {
-        if (result.isConfirmed) {
-          var sectionName = result.value[0];
-          var sectionImage = result.value[1];
-          
-          console.log(sectionName);
-          console.log(sectionImage);
-        }
-      });
-      
-      function handleFiles(files) {
-        var reader = new FileReader();
-        reader.onload = function () {
-          sectionImage = reader.result;
-        };
-        reader.readAsDataURL(files[0]);
       }
-    };
-  });
-  
-  
+    });
+  };
+});
+
+
+myApp.controller("cartController" , function($scope){
+
+});
+
