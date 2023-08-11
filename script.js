@@ -1,6 +1,6 @@
 var myApp = angular.module("myApp", ["ui.router", "ngCookies"]);
 var apiUrl = "http://10.21.82.46:8000/shopify/";
-// var apiUrl = "http://10.21.81.203:8000/"
+// var apiUrl = "http://10.21.81.228:8000/"
 
 myApp.config(function ($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise("/Home");
@@ -40,11 +40,6 @@ myApp.config(function ($stateProvider, $urlRouterProvider) {
 
 myApp.controller("indexController", function ($scope, $http, $state, $cookies) {
   $scope.userLoggedIn = false;
-
-  var authToken = $cookies.get("authToken");
-  if (authToken) {
-    $scope.userLoggedIn = true;
-  }
 
   $scope.showLoginPopup = function () {
     Swal.fire({
@@ -99,10 +94,8 @@ myApp.controller("indexController", function ($scope, $http, $state, $cookies) {
         })
           .then(function (response) {
             $scope.userLoggedIn = true;
-            var authToken = response.data.authToken;
-            $cookies.put("authToken", authToken);
-
-            var register = response.data.superuser;
+  
+            var register = response.data.is_superuser;
             superuser = register;
 
             console.log(response);
@@ -258,65 +251,60 @@ myApp.controller("indexController", function ($scope, $http, $state, $cookies) {
     return contactPattern.test(contact);
   }
 
-  $(document).on("click", "#addItemBtn", function (event) {
+  $(document).on("click", "#loginBtn", function (event) {
     event.preventDefault();
 
     $scope.showLoginPopup();
   });
 });
 
-myApp.controller(
-  "managerController",
-  function ($scope, $http, $cookies, $window) {
-    $scope.showCreateSection = function (event) {
-      event.preventDefault();
+myApp.controller("managerController", [ "$scope", "$http", "$cookies", function ($scope, $http, $cookies,) {
+  
+  $scope.showCreateSection = function (event) {
+    event.preventDefault();
 
-      Swal.fire({
-        title: "Create Section",
-        html: `<div class="input-group">
-      <div class="custom-file">
-        <input type="file" class="custom-file-input" id="inputGroupFile04" accept="image/*">
-      </div>
-    </div>`,
-        confirmButtonText: "Create",
-        showCancelButton: true,
-        cancelButtonText: "Cancel",
-      }).then(function (result) {
-        if (result.isConfirmed) {
-          var sectionImage = document.getElementById("sectionImage").files[0];
+    Swal.fire({
+      title: "Create Section",
+      html: `<div class="input-group">
+    <div class="custom-file">
+      <input type="file" class="custom-file-input" id="sectionImage" accept="image/*">
+    </div>
+  </div>`,
+      confirmButtonText: "Create",
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+    }).then(function (result) {
+      if (result.isConfirmed) {
+        var sectionImage = document.getElementById("sectionImage").files[0];
 
-          var formData = new FormData();
-          formData.append("sectionImage", sectionImage);
+        var formData = new FormData();
+        formData.append("sectionImage", sectionImage);
 
-          $http({
-            method: "POST",
-            // url: apiUrl + 'add_section/',
-            url: apiUrl + "addcategory/",
-            headers: {
-              "Content-Type": undefined,
-              Authorization: "Bearer " + $cookies.get("authToken"),
-            },
-            transformRequest: angular.identity,
-            data: formData,
+        $http({
+          method: "POST",
+          // url: apiUrl + "add_section/",
+          url: apiUrl + "addcategory/",
+          headers: {
+            "Content-Type": undefined,
+            "Cookie": document.cookie,
+          },
+          data: formData,
+        })
+          .then(function (response) {
+            console.log(response)
+            if (response.data.authenticate_id) {
+              console.log("User is authenticated");
+            } else {
+              console.log("User is not authenticated");
+            }
           })
-            .then(function (response) {
-              console.log(response.data);
-
-              if (response.data.authenticate_id) {
-                $cookies.put("authToken", response.data.authenticate_id);
-                console.log("User is authenticated");
-              } else {
-                console.log("User is not authenticated");
-              }
-            })
-            .catch(function (error) {
-              console.error(error);
-            });
-        }
-      });
-    };
-  }
-);
+          .catch(function (error) {
+            console.error(error);
+          });
+      }
+    });
+  };
+}]);
 
 myApp.controller("cartController", function ($scope) {});
 

@@ -21,12 +21,12 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mr-auto"></ul>
             <form class="form-inline my-2 my-lg-0 search-form">
-                <input class="form-control mr-sm-2 search-input" type="search" placeholder="Search" aria-label="Search">
+                <input class="form-control mr-sm-2 search-input" type="search" placeholder="&#xF52A;Search" aria-label="Search">
                 <button class="btn btn-outline-success my-2 my-sm-0 search-Btn" type="submit"> <i class="bi bi-search"></i>Search</button>
             </form>            
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item login-Btn">
-                        <a class="nav-link login-Btn" ui-sref="Cart" style="color: rgb(8, 130, 89);">
+                <li class="nav-item cart-Btn">
+                        <a class="nav-link cart-Btn" ui-sref="Cart" style="background-color: rgb(8, 130, 89); border-radius: 5px; color: white;">
                         <i class="bi bi-cart-fill"></i> Cart
                     </a>                    
                 </li>
@@ -42,11 +42,11 @@
                         <i class="bi bi-box-arrow-right"></i> Logout
                     </a>
                 </li>
-            </ul>            
+            </ul>
         </div>
     </nav>    
     <div class="banner">
-
+        <img src="/media/posters/Artboard 1.png" class="img-fluid" alt="">
     </div>
     <div class="container-fluid">
         <div class="row">
@@ -56,19 +56,19 @@
                         <div class="heading d-flex justify-content-center align-items-center">
                             <h2><a class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" ui-sref="Products">Our Products</a></h2>
                         </div>
-                        <div class="row">
-                            <div class="col-md-3">
+                        <div class="row d-flex justify-content-center align-items-center">
+                            <div class="col-md-3 d-flex justify-content-center align-items-center">
                                 <div class="card" style="width: 18rem;">
                                     <img src="media/productImgs/apple.jpg" class="card-img-top" alt="...">
                                     <div class="card-body">
                                         <h5 class="card-title">Apple</h5>
                                         <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
                                         <button href="#" class="btn btn-primary" style="background-color: rgb(8, 130, 89); border-color: rgb(8, 130, 89);">$25</button>
-                                        <a href="#" class="btn btn-primary" style="background-color: rgb(8, 130, 89); border-color: rgb(8, 130, 89);"> <i class="bi bi-cart-fill"></i>Add item</a>
+                                        <a href="#" class="btn btn-primary" id="loginBtn" style="background-color: rgb(8, 130, 89); border-color: rgb(8, 130, 89);"> <i class="bi bi-cart-fill"></i>Add item</a>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3 d-flex justify-content-center align-items-center" >
                                 <div class="card" style="width: 18rem;">
                                     <img src="media/productImgs/banana.jpg" class="card-img-top" alt="...">
                                     <div class="card-body">
@@ -79,7 +79,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3 d-flex justify-content-center align-items-center">
                                 <div class="card" style="width: 18rem;">
                                     <img src="media/productImgs/kiwi.jpg" class="card-img-top" alt="...">
                                     <div class="card-body">
@@ -90,7 +90,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3 d-flex justify-content-center align-items-center">
                                 <div class="card" style="width: 18rem;">
                                     <img src="media/productImgs/pineapple.jpg" class="card-img-top" alt="...">
                                     <div class="card-body">
@@ -131,8 +131,14 @@
                             </a>
                         </div> 
                     </div> -->
-                    <div class="posters"></div>
-                    <div></div>
+                    <div class="row posters">
+                        <div class="col-md-4">
+                            <img src="/media/posters/Artboard 2.png" class="img-fluid" alt="">
+                        </div>
+                        <div class="col-md-8">
+                            <img src="/media/posters/Artboard 3.png" alt="" class="img-fluid" height="400px" width="100%">
+                        </div>
+                    </div>
                     <div class="category">
                         <div class="heading d-flex justify-content-center align-items-center">
                             <h2>Categories</h2>
