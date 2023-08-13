@@ -1,6 +1,6 @@
 var myApp = angular.module("myApp", ["ui.router", "ngCookies"]);
-var apiUrl = "http://10.21.82.46:8000/shopify/";
-// var apiUrl = "http://10.21.81.228:8000/"
+var apiUrl = "https://10.21.82.46:8000/shopify/";
+// var apiUrl = "http://10.21.83.42:8000/"
 
 myApp.config(function ($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise("/Home");
@@ -37,6 +37,42 @@ myApp.config(function ($stateProvider, $urlRouterProvider) {
       controller: "addProductController",
     });
 });
+
+myApp.factory("alertService", ["$rootScope", "$timeout", function($rootScope, $timeout) {
+
+  var alertService = {
+    add: function(type, msg, section) {
+      if (section === undefined) section = 1;
+      $rootScope.alerts.push({
+        'type': type,
+        'msg': msg,
+        'section': section,
+        close: function() {
+          return alertService.closeAlert(this);
+        }
+      });
+    },
+
+    closeAlert: function(alert) {
+      this.closeAlertIdx($rootScope.alerts.indexOf(alert));
+    },
+    closeAlertIdx: function(index) {
+      return $rootScope.alerts.splice(index, 1);
+    },
+    clear: function() {
+      $rootScope.alerts = [];
+    }
+  };
+
+  $rootScope.$on('$stateChangeSuccess', function() {
+    alertService.clear();
+  });
+
+  $rootScope.alerts = [];
+
+  return alertService;
+}]);
+
 
 myApp.controller("indexController", function ($scope, $http, $state, $cookies) {
   $scope.userLoggedIn = false;
@@ -88,19 +124,22 @@ myApp.controller("indexController", function ($scope, $http, $state, $cookies) {
 
         $http({
           method: "POST",
-          // url: apiUrl + "custom_login/",
           url: apiUrl + "login/",
+          // url: apiUrl + "custom_login/",
           data: loginData,
+          withCredentials: true
         })
           .then(function (response) {
-            $scope.userLoggedIn = true;
+
+            $scope.userLoggedIn = true;  
   
-            var register = response.data.is_superuser;
-            superuser = register;
+            var verify = response.data.is_superuser;
+            superuser = verify;
 
             console.log(response);
             if (superuser) {
               $state.go("manager");
+
             } else {
               $state.go("Home");
             }
@@ -131,6 +170,7 @@ myApp.controller("indexController", function ($scope, $http, $state, $cookies) {
     $http({
       method: "GET",
       url: apiUrl + "logout/",
+      withCredentials: true,
     })
       .then(function (response) {
         console.log(response);
@@ -258,7 +298,9 @@ myApp.controller("indexController", function ($scope, $http, $state, $cookies) {
   });
 });
 
-myApp.controller("managerController", [ "$scope", "$http", "$cookies", function ($scope, $http, $cookies,) {
+myApp.controller("managerController", [ "$scope", "$http", "$cookies", "$state", 'alertService', function ($scope, $http, $cookies, $state, alertService) {
+  
+  addService.add('success', 'Welcome to your dashboard', 1);
   
   $scope.showCreateSection = function (event) {
     event.preventDefault();
@@ -267,6 +309,7 @@ myApp.controller("managerController", [ "$scope", "$http", "$cookies", function 
       title: "Create Section",
       html: `<div class="input-group">
     <div class="custom-file">
+      <input type="text" class="section-name" id="sectionName">
       <input type="file" class="custom-file-input" id="sectionImage" accept="image/*">
     </div>
   </div>`,
@@ -275,20 +318,22 @@ myApp.controller("managerController", [ "$scope", "$http", "$cookies", function 
       cancelButtonText: "Cancel",
     }).then(function (result) {
       if (result.isConfirmed) {
+        var sectionName = document.getElementById("sectionName").value;
         var sectionImage = document.getElementById("sectionImage").files[0];
 
         var formData = new FormData();
-        formData.append("sectionImage", sectionImage);
+        formData.append("categoty_name", sectionName)
+        formData.append("category_image", sectionImage);
+
+        console.log(formData);
 
         $http({
           method: "POST",
           // url: apiUrl + "add_section/",
           url: apiUrl + "addcategory/",
-          headers: {
-            "Content-Type": undefined,
-            "Cookie": document.cookie,
-          },
+          withCredentials: true,
           data: formData,
+          headers: { "Content-Type": undefined },
         })
           .then(function (response) {
             console.log(response)
@@ -304,6 +349,22 @@ myApp.controller("managerController", [ "$scope", "$http", "$cookies", function 
       }
     });
   };
+
+  $scope.logout = function () {
+    $scope.userLoggedIn = false;
+
+    $http({
+      method: "GET",
+      url: apiUrl + "logout/",
+    })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    $state.go("Home");
+  }
 }]);
 
 myApp.controller("cartController", function ($scope) {});

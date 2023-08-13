@@ -14,30 +14,21 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mr-auto"></ul>
-            <form class="form-inline my-2 my-lg-0 search-form">
-              <input class="form-control mr-sm-2 search-input" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success my-2 my-sm-0 search-Btn" type="submit"> <i class="bi bi-search"></i>Search</button>
-          </form>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item login-Btn">
-                        <a class="nav-link login-Btn" href="#" ng-click="showCreateSection($event)" style="color: rgb(8, 130, 89);">
-                        Create section
-                    </a>                    
-                </li>
+          <div class="navbar-nav ms-auto">
+            <ul class="navbar-nav ml-auto ">
+              <li class="nav-item login-Btn">
+                      <a class="nav-link login-Btn" href="#" ng-click="showCreateSection($event)" style="color: rgb(8, 130, 89);">
+                      Create section
+                  </a>                    
+              </li>
+              <li class="nav-item login-Btn" ng-show="!userLoggedIn">
+                  <a class="nav-link login-Btn" href="#" ng-click="logout()">
+                      <i class="bi bi-box-arrow-right"></i> Logout
+                  </a>
+              </li>
             </ul>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item login-Btn">
-                    <a class="nav-link login-Btn" href="#" style="color: rgb(8, 130, 89);"><i class="bi bi-box-arrow-left"></i>Logout</a>
-                </li>
-            </ul>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item login-Btn" ng-show="userLoggedIn">
-                    <a class="nav-link login-Btn" href="#" ng-click="logout()">
-                        <i class="bi bi-box-arrow-right"></i> Logout
-                    </a>
-                </li>
-            </ul>            
+          </div>
+                        
         </div>
     </nav>    
     <div>
