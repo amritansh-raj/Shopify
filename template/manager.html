@@ -1,96 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Shopify</title>
-  </head>
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand logo-Img" href="#">
-            <h2 style="color: rgb(8, 130, 89);">Shopify</h2>
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <div class="navbar-nav ms-auto">
-            <ul class="navbar-nav ml-auto ">
-              <li class="nav-item login-Btn">
-                      <a class="nav-link login-Btn" href="#" ng-click="showCreateSection($event)" style="color: rgb(8, 130, 89);">
-                      Create section
-                  </a>                    
-              </li>
-              <li class="nav-item login-Btn" ng-show="!userLoggedIn">
-                  <a class="nav-link login-Btn" href="#" ng-click="logout()">
-                      <i class="bi bi-box-arrow-right"></i> Logout
-                  </a>
-              </li>
-            </ul>
-          </div>
-                        
-        </div>
-    </nav>    
-    <div>
-      <section class="vh-100" style="background-color: #eee">
-        <div class="container h-100" style="padding-top: 100px;">
-          <div class="accordion accordion-flush" id="accordionFlushExample">
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="flush-headingOne">
-                <div class="row">
-                  <div class="col-11">
-                    <button
-                      class="accordion-button collapsed"
-                      type="button"
-                      data-bs-toggle="collapse"
-                      data-bs-target="#flush-collapseOne"
-                      aria-expanded="false"
-                      aria-controls="flush-collapseOne"
-                    >
-                      Section_name
-                    </button>
-                  </div>
-                  <div class="col-1">
-                    <button
-                      class="btn btn-outline-secondary"
-                      type="button"
-                      id="inputGroupFileAddon04"
-                    ><i class="bi bi-pencil-square"></i>
-                      Edit
-                    </button>
-                  </div>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shopify</title>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+    <div class="d-flex justify-content-center position-fixed top-0 start-50 translate-middle-x mt-2">
+      <div ng-repeat="alert in alerts | filter:{section:'1'}"
+        class="alert alert-{{alert.type}} alert-dismissible fade show" role="alert">
+        {{ alert.msg }}
+        <button type="button" class="btn-close" aria-label="Close" ng-click="alert.close()"></button>
+      </div>
+    </div>
+
+    <a class="navbar-brand logo-Img" href="#">
+      <h2 style="color: rgb(8, 130, 89);">Shopify</h2>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <div class="navbar-nav ms-auto">
+        <ul class="navbar-nav ml-auto ">
+          <li class="nav-item login-Btn">
+            <a class="nav-link login-Btn" href="#" ng-click="showCreateSection($event)" style="color: rgb(8, 130, 89);">
+              Create section
+            </a>
+          </li>
+          <li class="nav-item login-Btn" ng-show="!userLoggedIn">
+            <a class="nav-link login-Btn" href="#" ng-click="logout()">
+              <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div>
+    <section class="vh-100" style="background-color: #eee">
+      <div class="container h-100" style="padding-top: 100px;">
+        <div class="accordion accordion-flush" id="accordionFlushExample">
+          <div class="accordion-item" ng-repeat="category in categories">
+            <h2 class="accordion-header" id="flush-headingOne">
+              <div class="row">
+                <div class="col-10">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#flush-collapse{{$index}}" aria-expanded="false" aria-controls="flush-collapse{{$index}}">
+                    {{ category.category_name}}
+                  </button>
                 </div>
-              </h2>
-              <div
-                id="flush-collapseOne"
-                class="accordion-collapse collapse"
-                aria-labelledby="flush-headingOne"
-                data-bs-parent="#accordionFlushExample"
-              >
-                <div class="accordion-body">
-                  <div class="row flex-nowrap overflow-auto">
-                    <div class="col-md-2">
-                      <div class="card" style="width: 14rem">
-                        <i class="bi bi-plus-circle" style="height: 200px;"></i>
-                        <div class="card-body">
-                          <a href="#" class="btn btn-primary mt-">Add item</a>
-                        </div>
+                <div class="col-1">
+                  <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04"><i
+                      class="bi bi-pencil-square"></i>
+                    Edit
+                  </button>
+                </div>
+                <div class="col-1">
+                  <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04"><i class="bi bi-trash"></i>
+                    Del
+                  </button>
+                </div>
+              </div>
+            </h2>
+            <div id="flush-collapse{{$index}}" class="accordion-collapse collapse" aria-labelledby="flush-heading{{$index}}"
+              data-bs-parent="#accordionFlushExample">
+              <div class="accordion-body">
+                <div class="row flex-nowrap overflow-auto">
+                  <div class="col-md-2">
+                    <div class="card" style="width: 14rem">
+                      <i class="bi bi-plus-circle" style="height: 200px;"></i>
+                      <div class="card-body">
+                        <a href="#" class="btn btn-primary mt-">Add item</a>
                       </div>
                     </div>
-                    <div class="col-md-2">
-                      <div class="card" style="width: 14rem">
-                        <img
-                          src="media/productImgs/pineapple.jpg"
-                          class="card-img-top"
-                          alt="..."
-                        />
-                        <div class="card-body">
-                          <h5 class="card-title">Pineapple</h5>
-                          <button href="#" class="btn btn-primary" disabled>
-                            $25
-                          </button>
-                          <a href="#" class="btn btn-primary">Add item</a>
-                        </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="card" style="width: 14rem">
+                      <img ng-src="https://10.21.82.46:8000/media/{{ category.category_image }}" alt="{{ category.category_name }}" width="200">
+                      <div class="card-body">
+                        <h5 class="card-title">Pineapple</h5>
+                        <button href="#" class="btn btn-primary" disabled>
+                          $25
+                        </button>
+                        <a href="#" class="btn btn-primary">Add item</a>
                       </div>
                     </div>
                   </div>
@@ -99,11 +98,13 @@
             </div>
           </div>
         </div>
-      </section>
-    </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.4/dist/sweetalert2.all.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.26/angular-ui-router.min.js"></script>
-    <script src="../script.js"></script>
-  </body>
+      </div>
+    </section>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.4/dist/sweetalert2.all.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.26/angular-ui-router.min.js"></script>
+  <script src="../script.js"></script>
+</body>
+
 </html>
