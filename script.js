@@ -325,8 +325,6 @@ myApp.controller("managerController", [
         }
 
         console.log($scope.categories);
-
-        // $scope.displayCategories();
       })
       .catch(function (error) {
         if (error.data && error.data.message) {
@@ -335,6 +333,75 @@ myApp.controller("managerController", [
           $window.alert("An error occured. Please try again");
         }
       });
+
+    $scope.edit = function(category) {
+      if ($scope.editingCategory) {
+        $scope.cancelEdit($scope.editingCategory);
+      }
+
+      var updatedImageInput = angular.element(document.querySelector("#updatedImage"));
+      if (updatedImageInput.length > 0) {
+        category.updateImage = updatedImageInput[0].files[0];
+        console.log(category.updateImage);
+      }
+
+    category.editMode = true;
+    $scope.editingCategory = category;
+    category.updateName = category.category_name; 
+    category.updateImage = category.category_image;
+
+    };
+
+    
+    $scope.cancelEdit = function(category) {
+      category.editMode = false;
+      category.updateName = category.category_name; 
+      category.updateImage = category.category_image;
+    };    
+
+    $scope.saveEdit = function(category){
+      if(category.updateName){
+        category.category_name = category.updateName;
+        category.category_image = category.updateImage;
+      }
+
+      var formData = new FormData();
+      formData.append("new_category_name", category.updateName);
+      formData.append("new_category_image", category.updateImage);
+      formData.append("id", category.id)
+
+      console.log(formData);
+
+      $http({
+        method: "PUT",
+        url: apiUrl + "addcategory/",
+        withCredentials: true,
+        data: formData,
+        headers: { "Content-Type": undefined },
+      })
+        .then(function(response){
+          console.log(response);
+        })
+        .catch(function(error){
+          console.log(error);
+        })
+    }
+
+    $scope.delete = function(category){
+
+      $http({
+        method: "DELETE",
+        url: apiUrl + "addcategory/",
+        withCredentials: true,
+        data: {id: category.id}
+      })
+        .then(function(response){
+          console.log("deleted");
+        })
+        .catch(function(error){
+          console.log(error);
+        })
+    }
 
     $scope.showCreateSection = function (event) {
       event.preventDefault();
@@ -370,11 +437,6 @@ myApp.controller("managerController", [
           })
             .then(function (response) {
               console.log(response);
-              // if (response.data.authenticate_id) {
-              //   console.log("User is authenticated");
-              // } else {
-              //   console.log("User is not authenticated");
-              // }
             })
             .catch(function (error) {
               console.error(error);
@@ -401,6 +463,14 @@ myApp.controller("managerController", [
   },
 ]);
 
-myApp.controller("cartController", function ($scope) {});
+myApp.controller("cartController", function ($scope) {
 
-myApp.controller("addProductController", function ($scope) {});
+});
+
+myApp.controller("addProductController", function ($scope) {
+
+});
+
+myApp.controller("categoryController", function($scope){
+
+})

@@ -49,24 +49,31 @@
         <div class="accordion accordion-flush" id="accordionFlushExample">
           <div class="accordion-item" ng-repeat="category in categories">
             <h2 class="accordion-header" id="flush-headingOne">
-              <div class="row">
+              <div class="row mt-5">
                 <div class="col-10">
                   <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                     data-bs-target="#flush-collapse{{$index}}" aria-expanded="false" aria-controls="flush-collapse{{$index}}">
                     {{ category.category_name}}
                   </button>
                 </div>
-                <div class="col-1">
-                  <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04"><i
-                      class="bi bi-pencil-square"></i>
-                    Edit
-                  </button>
-                </div>
-                <div class="col-1">
-                  <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04"><i class="bi bi-trash"></i>
-                    Del
-                  </button>
-                </div>
+
+                <div class="col-2">
+                  <div ng-if="!category.editMode">
+                    <button class="btn btn-outline-secondary" type="button" ng-click="edit(category)">
+                      <i class="bi bi-pencil-square"></i> Edit
+                    </button>
+                    <button class="btn btn-outline-secondary" type="button" ng-click="delete(category)">
+                      <i class="bi bi-trash"></i> Del
+                    </button>
+                  </div>
+                  <div ng-if="category.editMode">
+                    <input type="text" ng-model="category.updateName" class="form-control">
+                    <input type="file" ng-model="category.updateImage" class="custom-file-input" id="updatedImage" accept="image/*">
+                    <button class="btn btn-primary" ng-click="saveEdit(category)">Save</button>
+                    <button class="btn btn-secondary" ng-click="cancelEdit(category)">Cancel</button>
+                  </div>
+                </div>                
+
               </div>
             </h2>
             <div id="flush-collapse{{$index}}" class="accordion-collapse collapse" aria-labelledby="flush-heading{{$index}}"
@@ -77,7 +84,7 @@
                     <div class="card" style="width: 14rem">
                       <i class="bi bi-plus-circle" style="height: 200px;"></i>
                       <div class="card-body">
-                        <a href="#" class="btn btn-primary mt-">Add item</a>
+                        <a href="#" class="btn btn-primary mt-">Add Products</a>
                       </div>
                     </div>
                   </div>
@@ -86,10 +93,8 @@
                       <img ng-src="https://10.21.82.46:8000/media/{{ category.category_image }}" alt="{{ category.category_name }}" width="200">
                       <div class="card-body">
                         <h5 class="card-title">Pineapple</h5>
-                        <button href="#" class="btn btn-primary" disabled>
-                          $25
-                        </button>
-                        <a href="#" class="btn btn-primary">Add item</a>
+                        <a href="#" class="btn btn-primary">Edit</a>
+                        <a href="#" class="btn btn-primary">Delete</a>
                       </div>
                     </div>
                   </div>
