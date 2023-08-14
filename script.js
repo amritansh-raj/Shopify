@@ -1,5 +1,5 @@
 var myApp = angular.module("myApp", ["ui.router", "ngCookies"]);
-var apiUrl = "https://10.21.82.46:8000/shopify/";
+var apiUrl = "https://10.21.83.174:8000/shopify/";
 
 myApp.config(function ($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise("/Home");
@@ -328,9 +328,9 @@ myApp.controller("managerController", [
       })
       .catch(function (error) {
         if (error.data && error.data.message) {
-          $window.alert(error.data.message);
+          // $window.alert(error.data.message);
         } else {
-          $window.alert("An error occured. Please try again");
+          // $window.alert("An error occured. Please try again");
         }
       });
 
@@ -339,11 +339,13 @@ myApp.controller("managerController", [
         $scope.cancelEdit($scope.editingCategory);
       }
 
-      var updatedImageInput = angular.element(document.querySelector("#updatedImage"));
-      if (updatedImageInput.length > 0) {
-        category.updateImage = updatedImageInput[0].files[0];
-        console.log(category.updateImage);
-      }
+      // var updatedImageInput = angular.element(document.querySelector("#updatedImage").files[0]);
+      // if (updatedImageInput.length > 0) {
+      //   category.updateImage = updatedImageInput[0].files[0];
+      //   console.log(category.updateImage);
+      // }
+
+      // console.log(category.updatedImageInput);
 
     category.editMode = true;
     $scope.editingCategory = category;
@@ -360,21 +362,24 @@ myApp.controller("managerController", [
     };    
 
     $scope.saveEdit = function(category){
+
       if(category.updateName){
         category.category_name = category.updateName;
         category.category_image = category.updateImage;
       }
 
+      var testImage = document.getElementById("updatedImage").files[0];      
+
       var formData = new FormData();
-      formData.append("new_category_name", category.updateName);
-      formData.append("new_category_image", category.updateImage);
+      formData.append("category_name", category.updateName);
+      formData.append("category_image", testImage);
       formData.append("id", category.id)
 
       console.log(formData);
 
       $http({
-        method: "PUT",
-        url: apiUrl + "addcategory/",
+        method: "POST",
+        url: apiUrl + "editcategory/",
         withCredentials: true,
         data: formData,
         headers: { "Content-Type": undefined },
