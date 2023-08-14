@@ -334,6 +334,101 @@ myApp.controller("managerController", [
         }
       });
 
+      $scope.showCreateSection = function (event) {
+        event.preventDefault();
+  
+        Swal.fire({
+          title: "Create Section",
+          html: `<div class="input-group">
+      <div class="custom-file">
+        <input type="text" class="section-name" id="sectionName">
+        <input type="file" class="custom-file-input" id="sectionImage" accept="image/*">
+      </div>
+    </div>`,
+          confirmButtonText: "Create",
+          showCancelButton: true,
+          cancelButtonText: "Cancel",
+        }).then(function (result) {
+          if (result.isConfirmed) {
+            var sectionName = document.getElementById("sectionName").value;
+            var sectionImage = document.getElementById("sectionImage").files[0];
+  
+            var formData = new FormData();
+            formData.append("category_name", sectionName);
+            formData.append("category_image", sectionImage);
+  
+            console.log(formData);
+  
+            $http({
+              method: "POST",
+              url: apiUrl + "addcategory/",
+              withCredentials: true,
+              data: formData,
+              headers: { "Content-Type": undefined },
+            })
+              .then(function (response) {
+                console.log(response);
+              })
+              .catch(function (error) {
+                console.error(error);
+              });
+          }
+        });
+      };
+
+      $scope.showModal = function () {
+        $('#addProductModal').modal('show');
+    };
+
+    $scope.hideModal = function () {
+        $('#addProductModal').modal('hide');
+    };
+
+    $scope.product = {};
+
+    $scope.addProduct = function(category) {
+      var productImage = document.getElementById("productImage").files[0];
+  
+      var productData = new FormData();
+      productData.append('product_category', category.id);
+      productData.append('product_name', $scope.product.name);
+      productData.append('description', $scope.product.description);
+      productData.append('price', $scope.product.price);
+      productData.append('product_quantity', $scope.product.quantity);
+      productData.append('unit', $scope.product.unit);
+      
+      var manufacturingDate = new Date($scope.product.manufacturingDate);
+      var formattedManufacturingDate = manufacturingDate.getFullYear() + '-' + (manufacturingDate.getMonth() + 1) + '-' + manufacturingDate.getDate();
+      
+      var expiryDate = new Date($scope.product.expiryDate);
+      var formattedExpiryDate = expiryDate.getFullYear() + '-' + (expiryDate.getMonth() + 1) + '-' + expiryDate.getDate();
+  
+      productData.append('product_manufacture_date', formattedManufacturingDate);
+      productData.append('product_expiry_date', formattedExpiryDate);
+      
+      productData.append('image', productImage);
+  
+      console.log(productData);
+  
+      $http({
+          method: "POST",
+          url: apiUrl + "additem/",
+          withCredentials: true,
+          data: productData,
+          headers: { "Content-Type": undefined },
+      })
+      .then(function (response) {
+          console.log(response);
+      })
+      .catch(function (error) {
+          console.error(error);
+      });
+  
+      $scope.product = {};
+  
+      $scope.hideModal();
+  }
+  
     $scope.edit = function(category) {
       if ($scope.editingCategory) {
         $scope.cancelEdit($scope.editingCategory);
@@ -353,7 +448,6 @@ myApp.controller("managerController", [
     category.updateImage = category.category_image;
 
     };
-
     
     $scope.cancelEdit = function(category) {
       category.editMode = false;
@@ -406,49 +500,9 @@ myApp.controller("managerController", [
         .catch(function(error){
           console.log(error);
         })
-    }
-
-    $scope.showCreateSection = function (event) {
-      event.preventDefault();
-
-      Swal.fire({
-        title: "Create Section",
-        html: `<div class="input-group">
-    <div class="custom-file">
-      <input type="text" class="section-name" id="sectionName">
-      <input type="file" class="custom-file-input" id="sectionImage" accept="image/*">
-    </div>
-  </div>`,
-        confirmButtonText: "Create",
-        showCancelButton: true,
-        cancelButtonText: "Cancel",
-      }).then(function (result) {
-        if (result.isConfirmed) {
-          var sectionName = document.getElementById("sectionName").value;
-          var sectionImage = document.getElementById("sectionImage").files[0];
-
-          var formData = new FormData();
-          formData.append("category_name", sectionName);
-          formData.append("category_image", sectionImage);
-
-          console.log(formData);
-
-          $http({
-            method: "POST",
-            url: apiUrl + "addcategory/",
-            withCredentials: true,
-            data: formData,
-            headers: { "Content-Type": undefined },
-          })
-            .then(function (response) {
-              console.log(response);
-            })
-            .catch(function (error) {
-              console.error(error);
-            });
-        }
-      });
     };
+
+
 
     $scope.logout = function () {
       $scope.userLoggedIn = false;

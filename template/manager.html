@@ -9,7 +9,6 @@
 
 <body>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
-
     <div class="d-flex justify-content-center position-fixed top-0 start-50 translate-middle-x mt-2">
       <div ng-repeat="alert in alerts | filter:{section:'1'}"
         class="alert alert-{{alert.type}} alert-dismissible fade show" role="alert">
@@ -19,7 +18,7 @@
     </div>
 
     <a class="navbar-brand logo-Img" href="#">
-      <h2 style="color: rgb(8, 130, 89);">Shopify</h2>
+      <h2 style="color: rgb(8, 130, 89)">Shopify</h2>
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,9 +26,9 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <div class="navbar-nav ms-auto">
-        <ul class="navbar-nav ml-auto ">
+        <ul class="navbar-nav ml-auto">
           <li class="nav-item login-Btn">
-            <a class="nav-link login-Btn" href="#" ng-click="showCreateSection($event)" style="color: rgb(8, 130, 89);">
+            <a class="nav-link login-Btn" href="#" ng-click="showCreateSection($event)" style="color: rgb(8, 130, 89)">
               Create section
             </a>
           </li>
@@ -45,14 +44,15 @@
 
   <div>
     <section class="vh-100" style="background-color: #eee">
-      <div class="container h-100" style="padding-top: 100px;">
+      <div class="container h-100" style="padding-top: 100px">
         <div class="accordion accordion-flush" id="accordionFlushExample">
           <div class="accordion-item" ng-repeat="category in categories">
             <h2 class="accordion-header" id="flush-headingOne">
               <div class="row mt-5">
                 <div class="col-10">
                   <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#flush-collapse{{$index}}" aria-expanded="false" aria-controls="flush-collapse{{$index}}">
+                    data-bs-target="#flush-collapse{{$index}}" aria-expanded="false"
+                    aria-controls="flush-collapse{{$index}}">
                     {{ category.category_name}}
                   </button>
                 </div>
@@ -67,30 +67,107 @@
                     </button>
                   </div>
                   <div ng-if="category.editMode">
-                    <input type="text" ng-model="category.updateName" class="form-control">
-                    <input type="file" ng-model="category.updateImage" class="custom-file-input" id="updatedImage" accept="image/*">
-                    <button class="btn btn-primary" ng-click="saveEdit(category)">Save</button>
-                    <button class="btn btn-secondary" ng-click="cancelEdit(category)">Cancel</button>
+                    <input type="text" ng-model="category.updateName" class="form-control" />
+                    <input type="file" ng-model="category.updateImage" class="custom-file-input" id="updatedImage"
+                      accept="image/*" />
+                    <button class="btn btn-primary" ng-click="saveEdit(category)">
+                      Save
+                    </button>
+                    <button class="btn btn-secondary" ng-click="cancelEdit(category)">
+                      Cancel
+                    </button>
                   </div>
-                </div>                
-
+                </div>
               </div>
             </h2>
-            <div id="flush-collapse{{$index}}" class="accordion-collapse collapse" aria-labelledby="flush-heading{{$index}}"
-              data-bs-parent="#accordionFlushExample">
+            <div id="flush-collapse{{$index}}" class="accordion-collapse collapse"
+              aria-labelledby="flush-heading{{$index}}" data-bs-parent="#accordionFlushExample">
               <div class="accordion-body">
                 <div class="row flex-nowrap overflow-auto">
                   <div class="col-md-2">
                     <div class="card" style="width: 14rem">
-                      <i class="bi bi-plus-circle" style="height: 200px;"></i>
-                      <div class="card-body">
-                        <a href="#" class="btn btn-primary mt-">Add Products</a>
+                      <i class="bi bi-plus-circle" style="height: 200px; width: 200px"></i>
+                      <div class="card-body d-flex justify-content-center">
+                        <div class="card-body text-center">
+                            <button class="btn btn-primary" ng-click="showModal()">
+                                Add Products
+                            </button>
+                        </div>
+                      </div>
+
+                    <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="addProductModalLabel">
+                                Add Product
+                              </h5>
+                              <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" ng-click="hideModal()">
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                              <form ng-submit="submitForm()">
+                                <div class="form-group">
+                                    <label for="productName">Product Name</label>
+                                    <input type="text" class="form-control" id="productName" ng-model="product.name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="productDescription">Product Description</label>
+                                    <textarea class="form-control" id="productDescription" ng-model="product.description" rows="3"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="productPrice">Product Price Per Unit</label>
+                                    <input type="number" class="form-control" id="productPrice" ng-model="product.price" required>
+                                </div>
+                                <div class="form-group">
+                                  <label for="productQuantity">Product Quantity</label>
+                                  <input type="number" class="form-control" id="productQuantity" ng-model="product.quantity" required>
+                                </div>
+                                <div class="form-group">
+                                  <label for="productUnit">Product Unit</label>
+                                  <select class="form-control" id="productUnit" ng-model="product.unit">
+                                      <option value="kg">kg</option>
+                                      <option value="ltr">ltr</option>
+                                      <option value="qty">qty</option>
+                                  </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="productManufacturingDate">Manufacturing Date</label>
+                                    <input type="date" class="form-control" id="productManufacturingDate" ng-model="product.manufacturingDate">
+                                </div>
+                                <div class="form-group">
+                                    <label for="productExpiryDate">Expiry Date</label>
+                                    <input type="date" class="form-control" id="productExpiryDate" ng-model="product.expiryDate">
+                                </div>
+                                <div class="form-group">
+                                    <label for="productImage">Product Image</label>
+                                    <input type="file" class="form-control" id="productImage" accept="image/*" ng-model="product.image">
+                                </div>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                    Close
+                                </button>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </form>
+                            
+                            
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal" ng-click="hideModal()">
+                                Close
+                              </button>
+                              <button type="button" class="btn btn-primary" ng-click="addProduct(category)">
+                                Save
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
                   <div class="col-md-2">
                     <div class="card" style="width: 14rem">
-                      <img ng-src="https://10.21.83.174:8000/media/{{ category.category_image }}" alt="{{ category.category_name }}" width="200">
+                      <img ng-src="https://10.21.83.174:8000/media/{{ category.category_image }}"
+                        alt="{{ category.category_name }}" width="200" />
                       <div class="card-body">
                         <h5 class="card-title">Pineapple</h5>
                         <a href="#" class="btn btn-primary">Edit</a>
