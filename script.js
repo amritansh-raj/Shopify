@@ -52,8 +52,11 @@ myApp.factory("alertService", [
             return alertService.closeAlert(this);
           },
         });
-      },
 
+        $timeout(function () {
+          alertService.closeAlert(this);
+        }, 3000);
+      },
       closeAlert: function (alert) {
         this.closeAlertIdx($rootScope.alerts.indexOf(alert));
       },
@@ -334,140 +337,287 @@ myApp.controller("managerController", [
         }
       });
 
-      $scope.showCreateSection = function (event) {
-        event.preventDefault();
-  
-        Swal.fire({
-          title: "Create Section",
-          html: `<div class="input-group">
+    $http({
+      method: "GET",
+      url: apiUrl + "getitem/",
+      withCredentials: true,
+    })
+      .then(function (response) {
+        console.log(response);
+        var products = response.data;
+
+        if (products) {
+          $scope.products = products;
+        }
+
+        console.log($scope.products);
+      })
+      .catch(function (error) {
+        if (error.data && error.data.message) {
+          // $window.alert(error.data.message);
+        } else {
+          // $window.alert("An error occured. Please try again");
+        }
+      });
+
+    $scope.showCreateSection = function (event) {
+      event.preventDefault();
+
+      Swal.fire({
+        title: "Create Section",
+        html: `<div class="input-group">
       <div class="custom-file">
         <input type="text" class="section-name" id="sectionName">
         <input type="file" class="custom-file-input" id="sectionImage" accept="image/*">
       </div>
     </div>`,
-          confirmButtonText: "Create",
-          showCancelButton: true,
-          cancelButtonText: "Cancel",
-        }).then(function (result) {
-          if (result.isConfirmed) {
-            var sectionName = document.getElementById("sectionName").value;
-            var sectionImage = document.getElementById("sectionImage").files[0];
-  
-            var formData = new FormData();
-            formData.append("category_name", sectionName);
-            formData.append("category_image", sectionImage);
-  
-            console.log(formData);
-  
-            $http({
-              method: "POST",
-              url: apiUrl + "addcategory/",
-              withCredentials: true,
-              data: formData,
-              headers: { "Content-Type": undefined },
-            })
-              .then(function (response) {
-                console.log(response);
-              })
-              .catch(function (error) {
-                console.error(error);
-              });
-          }
-        });
-      };
+        confirmButtonText: "Create",
+        showCancelButton: true,
+        cancelButtonText: "Cancel",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          var sectionName = document.getElementById("sectionName").value;
+          var sectionImage = document.getElementById("sectionImage").files[0];
 
-      $scope.showModal = function () {
-        $('#addProductModal').modal('show');
+          var formData = new FormData();
+          formData.append("category_name", sectionName);
+          formData.append("category_image", sectionImage);
+
+          console.log(formData);
+
+          $http({
+            method: "POST",
+            url: apiUrl + "addcategory/",
+            withCredentials: true,
+            data: formData,
+            headers: { "Content-Type": undefined },
+          })
+            .then(function (response) {
+              console.log(response);
+            })
+            .catch(function (error) {
+              console.error(error);
+            });
+        }
+      });
+    };
+
+    $scope.showModal = function () {
+      $("#addProductModal").modal("show");
+      console.log("modaltriggered");
     };
 
     $scope.hideModal = function () {
-        $('#addProductModal').modal('hide');
+      $("#addProductModal").modal("hide");
     };
 
     $scope.product = {};
 
-    $scope.addProduct = function(category) {
+    $scope.addProduct = function (category) {
+
       var productImage = document.getElementById("productImage").files[0];
-  
-      var productData = new FormData();
-      productData.append('product_category', category.id);
-      productData.append('product_name', $scope.product.name);
-      productData.append('description', $scope.product.description);
-      productData.append('price', $scope.product.price);
-      productData.append('product_quantity', $scope.product.quantity);
-      productData.append('unit', $scope.product.unit);
-      
+
       var manufacturingDate = new Date($scope.product.manufacturingDate);
-      var formattedManufacturingDate = manufacturingDate.getFullYear() + '-' + (manufacturingDate.getMonth() + 1) + '-' + manufacturingDate.getDate();
+
+      var formattedManufacturingDate =
+        manufacturingDate.getFullYear() +
+        "-" +
+        (manufacturingDate.getMonth() + 1) +
+        "-" +
+        manufacturingDate.getDate();
       
       var expiryDate = new Date($scope.product.expiryDate);
-      var formattedExpiryDate = expiryDate.getFullYear() + '-' + (expiryDate.getMonth() + 1) + '-' + expiryDate.getDate();
-  
-      productData.append('product_manufacture_date', formattedManufacturingDate);
-      productData.append('product_expiry_date', formattedExpiryDate);
       
-      productData.append('image', productImage);
-  
+      var formattedExpiryDate =
+        expiryDate.getFullYear() +
+        "-" +
+        (expiryDate.getMonth() + 1) +
+        "-" +
+        expiryDate.getDate();
+
+      var productData = new FormData();
+
+      productData.append("product_category", category.id);
+      productData.append("product_name", $scope.product.name);
+      productData.append("description", $scope.product.description);
+      productData.append("price", $scope.product.price);
+      productData.append("product_quantity", $scope.product.quantity);
+      productData.append("unit", $scope.product.unit);
+      productData.append(
+        "product_manufacture_date",
+        formattedManufacturingDate
+      );
+      productData.append("product_expiry_date", formattedExpiryDate);
+      productData.append("image", productImage);
+
       console.log(productData);
-  
+
       $http({
-          method: "POST",
-          url: apiUrl + "additem/",
-          withCredentials: true,
-          data: productData,
-          headers: { "Content-Type": undefined },
+        method: "POST",
+        url: apiUrl + "additem/",
+        withCredentials: true,
+        data: productData,
+        headers: { "Content-Type": undefined },
       })
-      .then(function (response) {
+        .then(function (response) {
           console.log(response);
-      })
-      .catch(function (error) {
+        })
+        .catch(function (error) {
           console.error(error);
-      });
-  
+        });
+
       $scope.product = {};
-  
+
       $scope.hideModal();
-  }
-  
-    $scope.edit = function(category) {
-      if ($scope.editingCategory) {
-        $scope.cancelEdit($scope.editingCategory);
+    };
+
+    $scope.editProduct = function (product) {
+
+      $("#editProductModal").modal("show");
+
+      if ($scope.editingProduct) {
+        $scope.cancelProductEdit($scope.editingProduct);
       }
 
-      // var updatedImageInput = angular.element(document.querySelector("#updatedImage").files[0]);
-      // if (updatedImageInput.length > 0) {
-      //   category.updateImage = updatedImageInput[0].files[0];
-      //   console.log(category.updateImage);
-      // }
+      product.editMode = true;
+      $scope.editingProduct = product;
+      $scope.editingProduct.updateName = product.product_name;
+      $scope.editingProduct.updateImage = product.image;
+      $scope.editingProduct.updateDescription = product.description;
+      $scope.editingProduct.updatePrice = product.price;
+      $scope.editingProduct.updateQuantity = product.product_quantity;
+      $scope.editingProduct.updateUnit = product.unit;
+      $scope.editingProduct.updateMfgDate = new Date(product.product_manufacture_date); 
+      $scope.editingProduct.updateExpDate = new Date(product.product_expiry_date);
 
-      // console.log(category.updatedImageInput);
-
-    category.editMode = true;
-    $scope.editingCategory = category;
-    category.updateName = category.category_name; 
-    category.updateImage = category.category_image;
-
+      console.log("Edit button clicked for product:", product);
     };
-    
-    $scope.cancelEdit = function(category) {
-      category.editMode = false;
-      category.updateName = category.category_name; 
+
+    $scope.cancelProductEdit = function (editingProduct) {
+
+      console.log(editingProduct);
+
+      $("#editProductModal").modal("hide");
+      
+      editingProduct.editMode = false;
+      editingProduct.updateName = editingProduct.product_name;
+      editingProduct.updateImage = editingProduct.image;
+      editingProduct.updateDescription = editingProduct.description;
+      editingProduct.updatePrice = editingProduct.price;
+      editingProduct.updateQuantity = editingProduct.product_quantity;
+      editingProduct.updateUnit = editingProduct.unit;
+      editingProduct.updateMfgDate = new Date(editingProduct.product_manufacture_date);
+      editingProduct.updateExpDate = new Date(editingProduct.product_expiry_date);
+      
+      console.log("Edit cancelled for product:", editingProduct);
+  };
+  
+
+    $scope.saveProductEdit = function (product) {
+
+      if (product.updateName) {
+        product.product_name = product.updateName;
+        product.image = product.updateImage;
+        product.description = product.updateDescription;
+        product.price = product.updatePrice;
+        product.product_quantity = product.updateQuantity;
+        product.unit = product.updateUnit;
+        product.product_manufacture_date = product.updateMfgDate;
+        product.product_expiry_date = product.updateExpDate;
+      }
+
+      var testImage = document.getElementById("editingProductImage").files[0];
+
+      var formattedMfgDate = 
+      product.updateMfgDate.getFullYear() +
+      "-" + 
+      (product.updateMfgDate.getMonth() + 1) +
+      "-" +
+      product.updateMfgDate.getDate();
+
+      var formattedExpDate = 
+      product.updateExpDate.getFullYear() +
+      "-" +
+      (product.updateExpDate.getMonth() + 1) +
+      "-" +
+      product.updateExpDate.getDate();
+
+      var updatedProductData = new FormData();
+      updatedProductData.append("product_name", product.updateName);
+      updatedProductData.append("image", testImage);
+      updatedProductData.append("description", product.updateDescription);
+      updatedProductData.append("price", product.updatePrice);
+      updatedProductData.append("product_quantity", product.updateQuantity);
+      updatedProductData.append("unit", product.updateUnit);
+      updatedProductData.append("product_manufacture_date", formattedMfgDate);
+      updatedProductData.append("product_expiry_date", formattedExpDate);
+      updatedProductData.append("item_id", product.id);
+      // updatedProductData.append("product_category", category.id);
+
+      console.log(updatedProductData);
+
+      $http({
+        method: "POST",
+        url: apiUrl + "edititem/",
+        withCredentials: true,
+        data: updatedProductData,
+        headers: { "Content-Type": undefined },
+      })
+        .then(function (response) {
+          console.log(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+
+        console.log("save product completed");
+    };
+
+    $scope.delProduct = function (product) {
+      $http({
+        method: "DELETE",
+        url: apiUrl + "additem/",
+        withCredentials: true,
+        data: { id: product.id },
+      })
+        .then(function (response) {
+          console.log("Product deleted");
+          // alertService.add("success", "Category deleted succesfully", 2);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    };
+
+    $scope.edit = function (category) {
+      if ($scope.editingProduct) {
+        $scope.cancelEdit($scope.editingProduct);
+      }
+
+      category.editMode = true;
+      $scope.editingProduct = category;
+      category.updateName = category.category_name;
       category.updateImage = category.category_image;
-    };    
+    };
 
-    $scope.saveEdit = function(category){
+    $scope.cancelEdit = function (category) {
+      category.editMode = false;
+      category.updateName = category.category_name;
+      category.updateImage = category.category_image;
+    };
 
-      if(category.updateName){
+    $scope.saveEdit = function (category) {
+      if (category.updateName) {
         category.category_name = category.updateName;
         category.category_image = category.updateImage;
       }
 
-      var testImage = document.getElementById("updatedImage").files[0];      
+      var testImage = document.getElementById("updatedImage").files[0];
 
       var formData = new FormData();
       formData.append("category_name", category.updateName);
       formData.append("category_image", testImage);
-      formData.append("id", category.id)
+      formData.append("id", category.id);
 
       console.log(formData);
 
@@ -478,58 +628,76 @@ myApp.controller("managerController", [
         data: formData,
         headers: { "Content-Type": undefined },
       })
-        .then(function(response){
-          console.log(response);
-        })
-        .catch(function(error){
-          console.log(error);
-        })
-    }
-
-    $scope.delete = function(category){
-
-      $http({
-        method: "DELETE",
-        url: apiUrl + "addcategory/",
-        withCredentials: true,
-        data: {id: category.id}
-      })
-        .then(function(response){
-          console.log("deleted");
-        })
-        .catch(function(error){
-          console.log(error);
-        })
-    };
-
-
-
-    $scope.logout = function () {
-      $scope.userLoggedIn = false;
-
-      $http({
-        method: "GET",
-        url: apiUrl + "logout/",
-      })
         .then(function (response) {
           console.log(response);
         })
         .catch(function (error) {
           console.log(error);
         });
-      $state.go("Home");
+    };
+
+    $scope.delete = function (category) {
+      $http({
+        method: "DELETE",
+        url: apiUrl + "addcategory/",
+        withCredentials: true,
+        data: { id: category.id },
+      })
+        .then(function (response) {
+          console.log("deleted");
+          alertService.add("success", "Category deleted succesfully", 2);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    };
+
+    $scope.logout = function () {
+      $http({
+        method: "GET",
+        url: apiUrl + "logout/",
+        withCredentials: true,
+      })
+        .then(function (response) {
+          console.log("Logout response:", response);
+          $scope.userLoggedIn = false;
+          $state.go("Home");
+        })
+        .catch(function (error) {
+          console.log("Logout error:", error);
+        });
     };
   },
 ]);
 
-myApp.controller("cartController", function ($scope) {
+myApp.controller("cartController", function ($scope) {});
 
-});
+myApp.controller("addProductController", function ($scope) {});
 
-myApp.controller("addProductController", function ($scope) {
+myApp.controller("categoryController", function ($scope) {});
 
-});
-
-myApp.controller("categoryController", function($scope){
-
-})
+//     "$$hashKey": "object:13"
+// ​​
+// deleted_status: false
+// ​​
+// description: "lkjhgfdsfghjkrdf"
+// ​​
+// id: 1
+// ​​
+// image: "apple_GkA1mK7.jpeg"
+// ​​
+// price: 50
+// ​​
+// product_added_date: "2023-08-14T17:50:55.703"
+// ​​
+// product_category_id: 5
+// ​​
+// product_expiry_date: "2022-10-12"
+// ​​
+// product_manufacture_date: null
+// ​​
+// product_name: "mango"
+// ​​
+// product_quantity: 2
+// ​​
+// unit: "kg"
