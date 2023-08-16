@@ -57,80 +57,25 @@
                             <h2><a class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" ui-sref="Products">Our Products</a></h2>
                         </div>
                         <div class="row d-flex justify-content-center align-items-center">
-                            <div class="col-md-3 d-flex justify-content-center align-items-center">
+                            <div class="col-md-3 d-flex justify-content-center align-items-center" ng-repeat="product in products">
                                 <div class="card" style="width: 18rem;">
-                                    <img src="media/productImgs/apple.jpg" class="card-img-top" alt="...">
+                                    <img src="https://10.21.86.182:8000/media/{{product.image}}" class="card-img-top" alt="...">
                                     <div class="card-body">
-                                        <h5 class="card-title">Apple</h5>
-                                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                        <button href="#" class="btn btn-primary" style="background-color: rgb(8, 130, 89); border-color: rgb(8, 130, 89);">$25</button>
-                                        <a href="#" class="btn btn-primary" id="loginBtn" style="background-color: rgb(8, 130, 89); border-color: rgb(8, 130, 89);"> <i class="bi bi-cart-fill"></i>Add item</a>
-                                    </div>
+                                        <h5 class="card-title">{{product.product_name}}</h5>
+                                        <!-- <p class="card-text">{{product.description}}</p> -->
+                                        <p class="product-price">₹{{product.price}}</p>
+                                        <button href="#" class="btn btn-primary" style="background-color: rgb(8, 130, 89); border-color: rgb(8, 130, 89);">
+                                            Buy Now
+                                        </button>
+                                        <button class="btn btn-primary" id="loginBtn" style="background-color: rgb(8, 130, 89); border-color: rgb(8, 130, 89);" ng-click="addCart(product)">
+                                            <i class="bi bi-cart-fill"></i> Add item
+                                        </button>
+                                    </div>                                    
                                 </div>
-                            </div>
-                            <div class="col-md-3 d-flex justify-content-center align-items-center" >
-                                <div class="card" style="width: 18rem;">
-                                    <img src="media/productImgs/banana.jpg" class="card-img-top" alt="...">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Banana</h5>
-                                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                        <button href="#" class="btn btn-primary" style="background-color: rgb(8, 130, 89); border-color: rgb(8, 130, 89);">$25</button>
-                                        <a href="#" class="btn btn-primary" style="background-color: rgb(8, 130, 89); border-color: rgb(8, 130, 89);"><i class="bi bi-cart-fill"></i>Add item</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 d-flex justify-content-center align-items-center">
-                                <div class="card" style="width: 18rem;">
-                                    <img src="media/productImgs/kiwi.jpg" class="card-img-top" alt="...">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Kiwi</h5>
-                                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                        <button href="#" class="btn btn-primary" style="background-color: rgb(8, 130, 89); border-color: rgb(8, 130, 89);">$25</button>
-                                        <a href="#" class="btn btn-primary" style="background-color: rgb(8, 130, 89); border-color: rgb(8, 130, 89);"><i class="bi bi-cart-fill"></i>Add item</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 d-flex justify-content-center align-items-center">
-                                <div class="card" style="width: 18rem;">
-                                    <img src="media/productImgs/pineapple.jpg" class="card-img-top" alt="...">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Pineapple</h5>
-                                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                        <button href="#" class="btn btn-primary" style="background-color: rgb(8, 130, 89); border-color: rgb(8, 130, 89);">$25</button>
-                                        <a href="#" class="btn btn-primary" style="background-color: rgb(8, 130, 89); border-color: rgb(8, 130, 89);"><i class="bi bi-cart-fill"></i>Add item</a>
-                                    </div>
-                                </div>
-                            </div>
+                            </div>    
                         </div>
                     </div>
-                    <!-- <div>
-                        <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
-                            <ol class="carousel-indicators">
-                                <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"></li>
-                                <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></li>
-                                <li data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></li>
-                            </ol>
-                            <div class="carousel-inner">
-                                <div class="carousel-item active">
-                                    <img class="d-block w-100" src="media/carousel/img1.jpg" alt="First slide" style="width: 100%; height: 700px;">
-                                </div>
-                                <div class="carousel-item">
-                                    <img class="d-block w-100" src="media/carousel/img2.jpg" alt="Second slide" style="width: 100%; height: 700px;">
-                                </div>
-                                <div class="carousel-item">
-                                    <img class="d-block w-100" src="media/carousel/img3.jpg" alt="Third slide" style="width: 100%; height: 700px;">
-                                </div>
-                            </div>
-                            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Previous</span>
-                            </a>
-                            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-bs-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Next</span>
-                            </a>
-                        </div> 
-                    </div> -->
+                    
                     <div class="row posters">
                         <div class="col-md-4">
                             <img src="/media/posters/Artboard 2.png" class="img-fluid" alt="">
@@ -144,46 +89,17 @@
                             <h2>Categories</h2>
                         </div>
                         <div class="row d-flex justify-content-center align-items-center" style="background-color: #f8f9fa; height: 300px; overflow-y: auto;">
-                            <div class="col-md-3">
+                            <div class="col-md-3" ng-repeat="category in categories">
                                 <a ui-sref="category" class="category-card-link">
                                     <div class="card" style="width: 18rem;">
                                         <div class="position-relative">
-                                            <img src="media/categoryImgs/fruits.jpg" class="card-img blur-image" alt="...">
-                                            <h3 class="card-title text-center position-absolute top-50 start-50 translate-middle">Fruits</h3>
+                                            <img src="https://10.21.86.182:8000/media/{{category.category_image}}" class="card-img blur-image" alt="...">
+                                            <h3 class="card-title text-center position-absolute top-50 start-50 translate-middle">{{category.category_name}}</h3>
                                         </div>
                                     </div>
                                 </a>
                             </div>
-                            <div class="col-md-3">
-                                <a ui-sref="category" class="category-card-link">
-                                    <div class="card" style="width: 18rem;">
-                                        <div class="position-relative">
-                                            <img src="media/categoryImgs/cold_drinks.jpg" class="card-img blur-image" alt="...">
-                                            <h3 class="card-title text-center position-absolute top-50 start-50 translate-middle">Cold Drink</h3>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-md-3">
-                                <a ui-sref="category" class="category-card-link">
-                                    <div class="card" style="width: 18rem;">
-                                        <div class="position-relative">
-                                            <img src="media/categoryImgs/snacks.jpg" class="card-img blur-image" alt="...">
-                                            <h3 class="card-title text-center position-absolute top-50 start-50 translate-middle">Snacks</h3>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-md-3">
-                                <a ui-sref="category" class="category-card-link">
-                                    <div class="card" style="width: 18rem;">
-                                        <div class="position-relative">
-                                            <img src="media/categoryImgs/vegetables.jpg" class="card-img blur-image" alt="...">
-                                            <h3 class="card-title text-center position-absolute top-50 start-50 translate-middle">Vegetables</h3>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
+                            
                         </div>  
                     </div>
                 </div>  

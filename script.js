@@ -1,5 +1,7 @@
 var myApp = angular.module("myApp", ["ui.router", "ngCookies"]);
-var apiUrl = "https://10.21.83.174:8000/shopify/";
+var apiUrl = "https://10.21.86.182:8000/shopify/";
+// var apiUrl = "https://10.21.84.138:8000/";
+
 
 myApp.config(function ($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise("/Home");
@@ -82,8 +84,68 @@ myApp.controller("indexController", [
   "$scope",
   "$http",
   "$state",
-  function ($scope, $http, $state) {
+  "$window",
+  function ($scope, $http, $state, $window) {
+
     $scope.userLoggedIn = false;
+
+    $http({
+      method: "GET",
+      url: apiUrl + "getcategory/",
+    })
+      .then(function (response) {
+        console.log(response);
+        var categories = response.data;
+
+        if (categories) {
+          $scope.categories = categories;
+        }
+
+        console.log($scope.categories);
+      })
+      .catch(function (error) {
+        if (error.data && error.data.message) {
+          // $window.alert(error.data.message);
+        } else {
+          // $window.alert("An error occured. Please try again");
+        }
+      });
+
+    $http({
+      method: "GET",
+      url: apiUrl + "getitem/",
+      withCredentials: true,
+      params: { id: 43 },
+    })
+      .then(function (response) {
+        console.log(response);
+        var products = response.data;
+
+        if (products) {
+          $scope.products = products;
+        }
+
+        console.log($scope.products);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
+    $scope.addCart = function (product) {
+      $http({
+        method: "POST",
+        url: apiUrl + "addtocart/",
+        withCredentials: true,
+        data: { item_id: product.id },
+      })
+        .then(function (response) {
+          $window.alert(response.data.message);
+        })
+        .catch(function (error) {
+          console.log(error);
+          $window.alert(error.data.message);
+        });
+    };
 
     $scope.showLoginPopup = function () {
       Swal.fire({
@@ -140,6 +202,7 @@ myApp.controller("indexController", [
               $scope.userLoggedIn = true;
 
               var verify = response.data.is_superuser;
+
               superuser = verify;
 
               console.log(response);
@@ -162,11 +225,6 @@ myApp.controller("indexController", [
         }
       });
 
-      $(document).on("click", "#addItemBtn", function (event) {
-        event.preventDefault();
-
-        $scope.showLoginPopup();
-      });
     };
 
     $scope.logout = function () {
@@ -270,7 +328,7 @@ myApp.controller("indexController", [
             data: registerData,
           })
             .then(function (response) {
-              userLoggedIn = true;
+              $scope.userLoggedIn = true;
               console.log(response);
             })
             .catch(function (error) {
@@ -296,11 +354,17 @@ myApp.controller("indexController", [
       return contactPattern.test(contact);
     }
 
-    $(document).on("click", "#loginBtn", function (event) {
-      event.preventDefault();
+    // $(document).on("click", "#loginBtn", function (event) {
+    //   event.preventDefault();
 
-      $scope.showLoginPopup();
-    });
+    //   console.log($scope.userLoggedIn);
+    //   console.log(!$scope.userLoggedIn);
+
+    //   if($scope.userLoggedIn){
+    //     $scope.showLoginPopup();
+    //   }
+      
+    // });
   },
 ]);
 
@@ -316,7 +380,7 @@ myApp.controller("managerController", [
 
     $http({
       method: "GET",
-      url: apiUrl + "getcategory/",
+      url: apiUrl + "addcategory/",
       withCredentials: true,
     })
       .then(function (response) {
@@ -337,28 +401,27 @@ myApp.controller("managerController", [
         }
       });
 
-    $http({
-      method: "GET",
-      url: apiUrl + "getitem/",
-      withCredentials: true,
-    })
-      .then(function (response) {
-        console.log(response);
-        var products = response.data;
-
-        if (products) {
-          $scope.products = products;
-        }
-
-        console.log($scope.products);
+    $scope.displayProducts = function (category) {
+      $http({
+        method: "GET",
+        url: apiUrl + "additem/",
+        withCredentials: true,
+        params: { id: category.id },
       })
-      .catch(function (error) {
-        if (error.data && error.data.message) {
-          // $window.alert(error.data.message);
-        } else {
-          // $window.alert("An error occured. Please try again");
-        }
-      });
+        .then(function (response) {
+          console.log(response);
+          var products = response.data;
+
+          if (products) {
+            $scope.products = products;
+          }
+
+          console.log($scope.products);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    };
 
     $scope.showCreateSection = function (event) {
       event.preventDefault();
@@ -402,19 +465,36 @@ myApp.controller("managerController", [
       });
     };
 
-    $scope.showModal = function () {
-      $("#addProductModal").modal("show");
-      console.log("modaltriggered");
+    $scope.showModal = function (index) {
+      $scope.isAddProductModalOpen[index] = true;
     };
 
-    $scope.hideModal = function () {
-      $("#addProductModal").modal("hide");
+    $scope.hideModal = function (index) {
+      $scope.isAddProductModalOpen[index] = false;
     };
+
+    $scope.isAddProductModalOpen = [];
+
+    $scope.$watchCollection(
+      "isAddProductModalOpen",
+      function (newValues, oldValues) {
+        for (var i = 0; i < newValues.length; i++) {
+          if (newValues[i] !== oldValues[i]) {
+            if (newValues[i]) {
+              $("#addProductModal" + i).modal("show");
+              console.log("modal " + i + " triggered");
+            } else {
+              $("#addProductModal" + i).modal("hide");
+              console.log("modal " + i + " hidden");
+            }
+          }
+        }
+      }
+    );
 
     $scope.product = {};
 
     $scope.addProduct = function (category) {
-
       var productImage = document.getElementById("productImage").files[0];
 
       var manufacturingDate = new Date($scope.product.manufacturingDate);
@@ -425,9 +505,9 @@ myApp.controller("managerController", [
         (manufacturingDate.getMonth() + 1) +
         "-" +
         manufacturingDate.getDate();
-      
+
       var expiryDate = new Date($scope.product.expiryDate);
-      
+
       var formattedExpiryDate =
         expiryDate.getFullYear() +
         "-" +
@@ -472,6 +552,7 @@ myApp.controller("managerController", [
     };
 
     $scope.editProduct = function (product) {
+      console.log(product);
 
       $("#editProductModal").modal("show");
 
@@ -487,18 +568,21 @@ myApp.controller("managerController", [
       $scope.editingProduct.updatePrice = product.price;
       $scope.editingProduct.updateQuantity = product.product_quantity;
       $scope.editingProduct.updateUnit = product.unit;
-      $scope.editingProduct.updateMfgDate = new Date(product.product_manufacture_date); 
-      $scope.editingProduct.updateExpDate = new Date(product.product_expiry_date);
+      $scope.editingProduct.updateMfgDate = new Date(
+        product.product_manufacture_date
+      );
+      $scope.editingProduct.updateExpDate = new Date(
+        product.product_expiry_date
+      );
 
       console.log("Edit button clicked for product:", product);
     };
 
     $scope.cancelProductEdit = function (editingProduct) {
-
       console.log(editingProduct);
 
       $("#editProductModal").modal("hide");
-      
+
       editingProduct.editMode = false;
       editingProduct.updateName = editingProduct.product_name;
       editingProduct.updateImage = editingProduct.image;
@@ -506,14 +590,18 @@ myApp.controller("managerController", [
       editingProduct.updatePrice = editingProduct.price;
       editingProduct.updateQuantity = editingProduct.product_quantity;
       editingProduct.updateUnit = editingProduct.unit;
-      editingProduct.updateMfgDate = new Date(editingProduct.product_manufacture_date);
-      editingProduct.updateExpDate = new Date(editingProduct.product_expiry_date);
-      
+      editingProduct.updateMfgDate = new Date(
+        editingProduct.product_manufacture_date
+      );
+      editingProduct.updateExpDate = new Date(
+        editingProduct.product_expiry_date
+      );
+
       console.log("Edit cancelled for product:", editingProduct);
-  };
-  
+    };
 
     $scope.saveProductEdit = function (product) {
+      console.log(product);
 
       if (product.updateName) {
         product.product_name = product.updateName;
@@ -528,19 +616,19 @@ myApp.controller("managerController", [
 
       var testImage = document.getElementById("editingProductImage").files[0];
 
-      var formattedMfgDate = 
-      product.updateMfgDate.getFullYear() +
-      "-" + 
-      (product.updateMfgDate.getMonth() + 1) +
-      "-" +
-      product.updateMfgDate.getDate();
+      var formattedMfgDate =
+        product.updateMfgDate.getFullYear() +
+        "-" +
+        (product.updateMfgDate.getMonth() + 1) +
+        "-" +
+        product.updateMfgDate.getDate();
 
-      var formattedExpDate = 
-      product.updateExpDate.getFullYear() +
-      "-" +
-      (product.updateExpDate.getMonth() + 1) +
-      "-" +
-      product.updateExpDate.getDate();
+      var formattedExpDate =
+        product.updateExpDate.getFullYear() +
+        "-" +
+        (product.updateExpDate.getMonth() + 1) +
+        "-" +
+        product.updateExpDate.getDate();
 
       var updatedProductData = new FormData();
       updatedProductData.append("product_name", product.updateName);
@@ -552,7 +640,10 @@ myApp.controller("managerController", [
       updatedProductData.append("product_manufacture_date", formattedMfgDate);
       updatedProductData.append("product_expiry_date", formattedExpDate);
       updatedProductData.append("item_id", product.id);
-      // updatedProductData.append("product_category", category.id);
+      updatedProductData.append(
+        "product_category",
+        product.product_category_id
+      );
 
       console.log(updatedProductData);
 
@@ -570,7 +661,7 @@ myApp.controller("managerController", [
           console.log(error);
         });
 
-        console.log("save product completed");
+      console.log("save product completed");
     };
 
     $scope.delProduct = function (product) {
@@ -670,34 +761,53 @@ myApp.controller("managerController", [
   },
 ]);
 
-myApp.controller("cartController", function ($scope) {});
+myApp.controller("addProductController", function ($scope) {
 
-myApp.controller("addProductController", function ($scope) {});
+});
 
-myApp.controller("categoryController", function ($scope) {});
+myApp.controller("cartController", [
+  "$scope",
+  "$http",
+  "$state",
+  "alertService",
+  function ($scope, $http, $state, alertService) {
+    
+    $http({
+      method: "GET",
+      url: apiUrl + "addtocart",
+      withCredentials: true,
+    })
+      .then(function (response) {
+        console.log(response);
+        var cartItems = response.data;
 
-//     "$$hashKey": "object:13"
-// ​​
-// deleted_status: false
-// ​​
-// description: "lkjhgfdsfghjkrdf"
-// ​​
-// id: 1
-// ​​
-// image: "apple_GkA1mK7.jpeg"
-// ​​
-// price: 50
-// ​​
-// product_added_date: "2023-08-14T17:50:55.703"
-// ​​
-// product_category_id: 5
-// ​​
-// product_expiry_date: "2022-10-12"
-// ​​
-// product_manufacture_date: null
-// ​​
-// product_name: "mango"
-// ​​
-// product_quantity: 2
-// ​​
-// unit: "kg"
+        if (cartItems) {
+          $scope.cartItems = cartItems;
+
+          $scope.totalPrice = cartItems.reduce(function (total, item) {
+            return total + item.item__price;
+          }, 0);
+        }
+
+        console.log($scope.cartItems);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
+    $scope.order = function(){
+
+      $http({
+        method: "POST",
+        url: apiUrl + "orderproduct/",
+        withCredentials: true
+      })
+        .then(function(response){
+          console.log(response);
+        })
+        .catch(function(error){
+          console.log(error);
+        })
+    }
+    
+}]);

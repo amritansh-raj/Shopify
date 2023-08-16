@@ -46,14 +46,14 @@
     <section class="vh-100" style="background-color: #eee">
       <div class="container h-100" style="padding-top: 100px">
         
-        <div class="accordion accordion-flush" id="accordionFlushExample" ng-repeat="category in categories">
+        <div class="accordion accordion-flush" id="accordionFlushExample{{$index}}" ng-repeat="category in categories">
           <div class="accordion-item">
-            <h2 class="accordion-header" id="flush-headingOne">
+            <h2 class="accordion-header" id="flush-heading{{$index}}">
               <div class="row mt-3">
                 <div class="col-10">
                   <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                     data-bs-target="#flush-collapse{{$index}}" aria-expanded="false"
-                    aria-controls="flush-collapse{{$index}}">
+                    aria-controls="flush-collapse{{$index}}" ng-click="displayProducts(category)">
                     {{ category.category_name}}
                   </button>
                 </div>
@@ -81,9 +81,9 @@
                 </div>
               </div>
             </h2>
-            
+
             <div id="flush-collapse{{$index}}" class="accordion-collapse collapse"
-              aria-labelledby="flush-heading{{$index}}" data-bs-parent="#accordionFlushExample">
+              aria-labelledby="flush-heading{{$index}}" data-bs-parent="#accordionFlushExample{{$index}}">
               <div class="accordion-body">
                 <div class="row flex-nowrap overflow-auto">
                   <div class="col-md-2">
@@ -91,13 +91,13 @@
                       <i class="bi bi-plus-circle" style="font-size: 11.5rem;"></i>
                       <div class="card-body d-flex justify-content-center">
                         <div class="card-body text-center">
-                          <button class="btn btn-primary" ng-click="showModal()">
+                          <button class="btn btn-primary" ng-click="showModal($index)">
                             Add Products
                           </button>
                         </div>
                       </div>
 
-                      <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog"
+                      <div class="modal fade" id="addProductModal{{$index}}" tabindex="-1" role="dialog"
                         aria-labelledby="addProductModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
                           <div class="modal-content">
@@ -106,7 +106,7 @@
                                 Add Product
                               </h5>
                               <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"
-                                ng-click="hideModal()">
+                                ng-click="hideModal($index)">
                               </button>
                             </div>
                             <div class="modal-body">
@@ -158,7 +158,7 @@
                             </div>
                             <div class="modal-footer">
                               <button type="button" class="btn btn-secondary" data-dismiss="modal"
-                                ng-click="hideModal()">
+                                ng-click="hideModal($index)">
                                 Close
                               </button>
                               <button type="button" class="btn btn-primary" ng-click="addProduct(category)">
@@ -173,7 +173,7 @@
 
                   <div class="col-md-2" ng-repeat="product in products">
                     <div class="card h-70">
-                      <img ng-src="https://10.21.83.174:8000/media/{{ product.image }}" alt="{{ product.image }}"
+                      <img ng-src="https://10.21.86.182:8000/media/{{ product.image }}" alt="{{ product.image }}"
                         class="card-img-top" style="object-fit: cover;">
                       <div class="card-body">
                         <h5 class="card-title">{{product.product_name}}</h5>
