@@ -151,7 +151,7 @@
                                 </div>
                                 <div class="form-group">
                                   <label for="productImage">Product Image</label>
-                                  <input type="file" class="form-control" id="productImage" accept="image/*"
+                                  <input type="file" class="form-control" id="productImage{{$index}}" accept="image/*"
                                     ng-model="product.image">
                                 </div>
                               </form>
@@ -161,7 +161,7 @@
                                 ng-click="hideModal($index)">
                                 Close
                               </button>
-                              <button type="button" class="btn btn-primary" ng-click="addProduct(category)">
+                              <button type="button" class="btn btn-primary" ng-click="addProduct(category, $index)">
                                 Add
                               </button>
                             </div>

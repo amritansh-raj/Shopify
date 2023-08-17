@@ -1,7 +1,5 @@
 var myApp = angular.module("myApp", ["ui.router", "ngCookies"]);
 var apiUrl = "https://10.21.86.182:8000/shopify/";
-// var apiUrl = "https://10.21.84.138:8000/";
-
 
 myApp.config(function ($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise("/Home");
@@ -86,7 +84,6 @@ myApp.controller("indexController", [
   "$state",
   "$window",
   function ($scope, $http, $state, $window) {
-
     $scope.userLoggedIn = false;
 
     $http({
@@ -224,7 +221,6 @@ myApp.controller("indexController", [
           $scope.showRegisterPopup();
         }
       });
-
     };
 
     $scope.logout = function () {
@@ -363,7 +359,7 @@ myApp.controller("indexController", [
     //   if($scope.userLoggedIn){
     //     $scope.showLoginPopup();
     //   }
-      
+
     // });
   },
 ]);
@@ -494,8 +490,11 @@ myApp.controller("managerController", [
 
     $scope.product = {};
 
-    $scope.addProduct = function (category) {
-      var productImage = document.getElementById("productImage").files[0];
+    $scope.addProduct = function (category,index) {
+
+      console.log("Index:", index);
+      var productImage = document.getElementById("productImage" + index).files[0];
+      console.log("productImage:", productImage);
 
       var manufacturingDate = new Date($scope.product.manufacturingDate);
 
@@ -732,7 +731,7 @@ myApp.controller("managerController", [
         method: "DELETE",
         url: apiUrl + "addcategory/",
         withCredentials: true,
-        data: { id: category.id },
+        data: { category_id: category.id },
       })
         .then(function (response) {
           console.log("deleted");
@@ -761,9 +760,34 @@ myApp.controller("managerController", [
   },
 ]);
 
-myApp.controller("addProductController", function ($scope) {
+myApp.controller("productController", [
+  "$scope",
+  "$http",
+  "$state",
+  "alertService",
+  function ($scope, $http, $state, alertService) {
 
-});
+    $http({
+      method: "GET",
+      url: apiUrl + "getallitem/",
+      withCredentials: true,
+    })
+      .then(function(response){
+        console.log(response)
+
+        var allproducts = response.data;
+
+        if(allproducts){
+          $scope.allproducts = allproducts
+        }
+
+        console.log($scope.allproducts)
+      })
+      .catch(function(error){
+        console.log(error);
+      })
+  },
+]);
 
 myApp.controller("cartController", [
   "$scope",
@@ -771,7 +795,6 @@ myApp.controller("cartController", [
   "$state",
   "alertService",
   function ($scope, $http, $state, alertService) {
-    
     $http({
       method: "GET",
       url: apiUrl + "addtocart",
@@ -795,19 +818,18 @@ myApp.controller("cartController", [
         console.log(error);
       });
 
-    $scope.order = function(){
-
+    $scope.order = function () {
       $http({
         method: "POST",
-        url: apiUrl + "orderproduct/",
-        withCredentials: true
+        url: apiUrl + "ordercart/",
+        withCredentials: true,
       })
-        .then(function(response){
+        .then(function (response) {
           console.log(response);
         })
-        .catch(function(error){
+        .catch(function (error) {
           console.log(error);
-        })
-    }
-    
-}]);
+        });
+    };
+  },
+]);
