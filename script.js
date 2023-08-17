@@ -128,6 +128,23 @@ myApp.controller("indexController", [
         console.log(error);
       });
 
+    $scope.buyNow = function(product){
+
+      $http({
+        method: "POST",
+        url: apiUrl + "addtocart/",
+        withCredentials: true,
+        data: { item_id: product.id },
+      })
+        .then(function (response) {
+          $window.alert(response.data.message);
+        })
+        .catch(function (error) {
+          console.log(error);
+          $window.alert(error.data.message);
+        });
+    }
+
     $scope.addCart = function (product) {
       $http({
         method: "POST",
@@ -409,10 +426,10 @@ myApp.controller("managerController", [
           var products = response.data;
 
           if (products) {
-            $scope.products = products;
+            category.products = products;
           }
 
-          console.log($scope.products);
+          console.log(category.products);
         })
         .catch(function (error) {
           console.log(error);
@@ -461,12 +478,12 @@ myApp.controller("managerController", [
       });
     };
 
-    $scope.showModal = function (index) {
-      $scope.isAddProductModalOpen[index] = true;
+    $scope.showModal = function(accordionIndex) {
+      $("#addProductModal" + accordionIndex).modal("show");
     };
 
-    $scope.hideModal = function (index) {
-      $scope.isAddProductModalOpen[index] = false;
+    $scope.hideModal = function(accordionIndex) {
+      $("#addProductModal" + accordionIndex).modal("hide");
     };
 
     $scope.isAddProductModalOpen = [];
@@ -550,10 +567,11 @@ myApp.controller("managerController", [
       $scope.hideModal();
     };
 
-    $scope.editProduct = function (product) {
-      console.log(product);
+    $scope.editProduct = function (product, accordionIndex, index) {
+      
+      $("#editProductModal" + accordionIndex + index).modal("show");
 
-      $("#editProductModal").modal("show");
+      console.log("#editProductModal" + accordionIndex + index);
 
       if ($scope.editingProduct) {
         $scope.cancelProductEdit($scope.editingProduct);
@@ -577,10 +595,10 @@ myApp.controller("managerController", [
       console.log("Edit button clicked for product:", product);
     };
 
-    $scope.cancelProductEdit = function (editingProduct) {
+    $scope.cancelProductEdit = function (editingProduct,accordionIndex, index) {
       console.log(editingProduct);
 
-      $("#editProductModal").modal("hide");
+      $("#editProductModal" +  accordionIndex + index).modal("hide");
 
       editingProduct.editMode = false;
       editingProduct.updateName = editingProduct.product_name;
@@ -831,5 +849,21 @@ myApp.controller("cartController", [
           console.log(error);
         });
     };
+
+    $scope.removefromcart = function(cartItem){
+
+      $http({
+        method: "DELETE",
+        url: apiUrl = "",
+        withCredentials: true,
+        data: {}
+      })
+        .then(function(response){
+          console.log(response);
+        })
+        .catch(function(error){
+          console.log(error);
+        })
+    }
   },
 ]);

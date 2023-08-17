@@ -46,7 +46,7 @@
     <section class="vh-100" style="background-color: #eee">
       <div class="container h-100" style="padding-top: 100px">
         
-        <div class="accordion accordion-flush" id="accordionFlushExample{{$index}}" ng-repeat="category in categories">
+        <div class="accordion accordion-flush" id="accordionFlushExample{{$index}}" ng-repeat="(accordionIndex, category) in categories">
           <div class="accordion-item">
             <h2 class="accordion-header" id="flush-heading{{$index}}">
               <div class="row mt-3">
@@ -97,7 +97,7 @@
                         </div>
                       </div>
 
-                      <div class="modal fade" id="addProductModal{{$index}}" tabindex="-1" role="dialog"
+                      <div class="modal fade" id="addProductModal{{accordionIndex}}" tabindex="-1" role="dialog"
                         aria-labelledby="addProductModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
                           <div class="modal-content">
@@ -171,7 +171,7 @@
                     </div>
                   </div>
 
-                  <div class="col-md-2" ng-repeat="product in products">
+                  <div class="col-md-2" ng-repeat="product in category.products track by $index">
                     <div class="card h-70">
                       <img ng-src="https://10.21.86.182:8000/media/{{ product.image }}" alt="{{ product.image }}"
                         class="card-img-top" style="object-fit: cover;">
@@ -179,7 +179,7 @@
                         <h5 class="card-title">{{product.product_name}}</h5>
                         <div ng-if="!product.editMode">
                           <button class="btn btn-outline-secondary btn-block" type="button"
-                            ng-click="editProduct(product)">
+                            ng-click="editProduct(product, accordionIndex, $index)">
                             <i class="bi bi-pencil-square"></i> Edit
                           </button>
                           <button class="btn btn-outline-secondary btn-block" type="button" ng-click="delProduct(product)">
@@ -188,9 +188,7 @@
                         </div>
                       </div>
                     </div>
-                  </div>
-
-                  <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog"
+                    <div class="modal fade" id="editProductModal{{accordionIndex}}{{$index}}" tabindex="-1" role="dialog"
                     aria-labelledby="editProductModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                       <div class="modal-content">
@@ -199,11 +197,11 @@
                             Edit Product
                           </h5>
                           <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"
-                            ng-click="cancelProductEdit(editingProduct)">
+                            ng-click="cancelProductEdit(editingProduct , accordionIndex, $index)">
                           </button>
                         </div>
                         <div class="modal-body">
-                          <form ng-submit="saveProductEditModal()">
+                            <form ng-submit="saveProductEditModal()">
                             <div class="form-group">
                                 <label for="productName">Product Name</label>
                                 <input type="text" class="form-control" id="productName"
@@ -249,7 +247,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal"
-                                    ng-click="cancelProductEdit(editingProduct)">
+                                    ng-click="cancelProductEdit(editingProduct , accordionIndex, $index)">
                                     Close
                                 </button>
                                 <button type="button" class="btn btn-primary" ng-click="saveProductEdit(editingProduct)">
@@ -262,6 +260,9 @@
                     </div>
                   </div>
 
+                  </div>
+
+                  
                 </div>
               </div>
             </div>
