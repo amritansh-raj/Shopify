@@ -1,6 +1,6 @@
 Project Title: Shopify - Grocery Store Frontend Web Application
 
-Description:
+Note: This project requires a dedicated backend server built with Django to run successfully. The link for that is (https://github.com/NikhilSinghj/Shopify_Grocery_shop).
 
 Overview:
 The Grocery Store Frontend Web Application is a responsive and user-friendly interface for customers to browse and purchase products from a grocery store. This web application interacts with a Django backend server on the same network to retrieve product information and facilitate user authentication. Additionally, it provides an admin interface for store managers to manage categories and products securely.
