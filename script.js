@@ -85,10 +85,12 @@ myApp.controller("indexController", [
   "$window",
   function ($scope, $http, $state, $window) {
     $scope.userLoggedIn = false;
+    console.log($scope.userLoggedIn);
 
     $http({
       method: "GET",
       url: apiUrl + "getcategory/",
+      withCredentials: true,
     })
       .then(function (response) {
         console.log(response);
@@ -110,9 +112,8 @@ myApp.controller("indexController", [
 
     $http({
       method: "GET",
-      url: apiUrl + "getitem/",
+      url: apiUrl + "getallitem/",
       withCredentials: true,
-      params: { id: 43 },
     })
       .then(function (response) {
         console.log(response);
@@ -128,13 +129,14 @@ myApp.controller("indexController", [
         console.log(error);
       });
 
-    $scope.buyNow = function(product){
-
+    $scope.buyNow = function (product) {
       $http({
         method: "POST",
-        url: apiUrl + "addtocart/",
+        url: apiUrl + "orderproduct/",
         withCredentials: true,
-        data: { item_id: product.id },
+        data: { item_id: product.id ,
+          quantity : product.product_quantity
+        },
       })
         .then(function (response) {
           $window.alert(response.data.message);
@@ -143,7 +145,7 @@ myApp.controller("indexController", [
           console.log(error);
           $window.alert(error.data.message);
         });
-    }
+    };
 
     $scope.addCart = function (product) {
       $http({
@@ -214,6 +216,7 @@ myApp.controller("indexController", [
           })
             .then(function (response) {
               $scope.userLoggedIn = true;
+              console.log($scope.userLoggedIn);
 
               var verify = response.data.is_superuser;
 
@@ -242,6 +245,7 @@ myApp.controller("indexController", [
 
     $scope.logout = function () {
       $scope.userLoggedIn = false;
+      console.log($scope.userLoggedIn);
 
       $http({
         method: "GET",
@@ -342,6 +346,8 @@ myApp.controller("indexController", [
           })
             .then(function (response) {
               $scope.userLoggedIn = true;
+              console.log($scope.userLoggedIn);
+
               console.log(response);
             })
             .catch(function (error) {
@@ -387,32 +393,37 @@ myApp.controller("managerController", [
   "$state",
   "alertService",
   function ($scope, $http, $state, alertService) {
+
     alertService.add("success", "Welcome to your dashboard", 1);
 
     $scope.categories = [];
 
-    $http({
-      method: "GET",
-      url: apiUrl + "addcategory/",
-      withCredentials: true,
-    })
-      .then(function (response) {
-        console.log(response);
-        var categories = response.data;
-
-        if (categories) {
-          $scope.categories = categories;
-        }
-
-        console.log($scope.categories);
+    function display(){
+      $http({
+        method: "GET",
+        url: apiUrl + "addcategory/",
+        withCredentials: true,
       })
-      .catch(function (error) {
-        if (error.data && error.data.message) {
-          // $window.alert(error.data.message);
-        } else {
-          // $window.alert("An error occured. Please try again");
-        }
-      });
+        .then(function (response) {
+          console.log(response);
+          var categories = response.data;
+  
+          if (categories) {
+            $scope.categories = categories;
+          }
+  
+          console.log($scope.categories);
+        })
+        .catch(function (error) {
+          if (error.data && error.data.message) {
+            // $window.alert(error.data.message);
+          } else {
+            // $window.alert("An error occured. Please try again");
+          }
+        });
+    }
+
+    display();
 
     $scope.displayProducts = function (category) {
       $http({
@@ -429,6 +440,7 @@ myApp.controller("managerController", [
             category.products = products;
           }
 
+          display();
           console.log(category.products);
         })
         .catch(function (error) {
@@ -470,6 +482,7 @@ myApp.controller("managerController", [
           })
             .then(function (response) {
               console.log(response);
+              display();
             })
             .catch(function (error) {
               console.error(error);
@@ -478,11 +491,11 @@ myApp.controller("managerController", [
       });
     };
 
-    $scope.showModal = function(accordionIndex) {
+    $scope.showModal = function (accordionIndex) {
       $("#addProductModal" + accordionIndex).modal("show");
     };
 
-    $scope.hideModal = function(accordionIndex) {
+    $scope.hideModal = function (accordionIndex) {
       $("#addProductModal" + accordionIndex).modal("hide");
     };
 
@@ -507,10 +520,10 @@ myApp.controller("managerController", [
 
     $scope.product = {};
 
-    $scope.addProduct = function (category,index) {
-
+    $scope.addProduct = function (category, index) {
       console.log("Index:", index);
-      var productImage = document.getElementById("productImage" + index).files[0];
+      var productImage = document.getElementById("productImage" + index)
+        .files[0];
       console.log("productImage:", productImage);
 
       var manufacturingDate = new Date($scope.product.manufacturingDate);
@@ -568,7 +581,6 @@ myApp.controller("managerController", [
     };
 
     $scope.editProduct = function (product, accordionIndex, index) {
-      
       $("#editProductModal" + accordionIndex + index).modal("show");
 
       console.log("#editProductModal" + accordionIndex + index);
@@ -595,10 +607,14 @@ myApp.controller("managerController", [
       console.log("Edit button clicked for product:", product);
     };
 
-    $scope.cancelProductEdit = function (editingProduct,accordionIndex, index) {
+    $scope.cancelProductEdit = function (
+      editingProduct,
+      accordionIndex,
+      index
+    ) {
       console.log(editingProduct);
 
-      $("#editProductModal" +  accordionIndex + index).modal("hide");
+      $("#editProductModal" + accordionIndex + index).modal("hide");
 
       editingProduct.editMode = false;
       editingProduct.updateName = editingProduct.product_name;
@@ -769,6 +785,8 @@ myApp.controller("managerController", [
         .then(function (response) {
           console.log("Logout response:", response);
           $scope.userLoggedIn = false;
+          console.log($scope.userLoggedIn);
+
           $state.go("Home");
         })
         .catch(function (error) {
@@ -785,25 +803,26 @@ myApp.controller("productController", [
   "alertService",
   function ($scope, $http, $state, alertService) {
 
+
     $http({
       method: "GET",
       url: apiUrl + "getallitem/",
       withCredentials: true,
     })
-      .then(function(response){
-        console.log(response)
+      .then(function (response) {
+        console.log(response);
 
         var allproducts = response.data;
 
-        if(allproducts){
-          $scope.allproducts = allproducts
+        if (allproducts) {
+          $scope.allproducts = allproducts;
         }
 
-        console.log($scope.allproducts)
+        console.log($scope.allproducts);
       })
-      .catch(function(error){
+      .catch(function (error) {
         console.log(error);
-      })
+      });
   },
 ]);
 
@@ -812,58 +831,91 @@ myApp.controller("cartController", [
   "$http",
   "$state",
   "alertService",
-  function ($scope, $http, $state, alertService) {
-    $http({
-      method: "GET",
-      url: apiUrl + "addtocart",
-      withCredentials: true,
-    })
-      .then(function (response) {
-        console.log(response);
-        var cartItems = response.data;
+  "$rootScope",
+  function ($scope, $http, $state, $rootScope, alertService) {
 
-        if (cartItems) {
-          $scope.cartItems = cartItems;
-
-          $scope.totalPrice = cartItems.reduce(function (total, item) {
-            return total + item.item__price;
-          }, 0);
-        }
-
-        console.log($scope.cartItems);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-
-    $scope.order = function () {
+    function display(){
       $http({
-        method: "POST",
-        url: apiUrl + "ordercart/",
+        method: "GET",
+        url: apiUrl + "addtocart",
         withCredentials: true,
       })
         .then(function (response) {
           console.log(response);
+          var cartItems = response.data;
+  
+          if (cartItems) {
+            $scope.cartItems = cartItems;
+  
+            $scope.totalPrice = cartItems.reduce(function (total, item) {
+              return total + item.item__price;
+            }, 0);
+          } else {
+            $scope.emptyCart = "Add items to cart";
+          }
+  
+          console.log($scope.cartItems);
+        })
+        .catch(function (error) {
+          console.log(error);
+        }); 
+    };
+    
+    display();
+
+    $scope.order = function (cartItems) {
+      console.log(cartItems);
+
+      quantity = document.getElementById("form0").value;
+      console.log(quantity);
+
+      var cartData = [];
+
+      for (var i in cartItems) {
+        var cartItemData = {
+          item_id: cartItems[i].item__pk,
+          quantity: cartItems[i].quantity,
+        };
+        cartData.push(cartItemData);
+      }
+
+      console.log(cartData);
+
+      $http({
+        method: "POST",
+        url: apiUrl + "ordercart/",
+        withCredentials: true,
+        data: cartData,
+      })
+        .then(function (response) {
+          Swal.fire({
+            icon: "success",
+            title: "Order Placed Successfully",
+            text: "Your order has been successfully placed.",
+            showConfirmButton: false,
+            timer: 2000,
+          });
+          display();
         })
         .catch(function (error) {
           console.log(error);
         });
     };
 
-    $scope.removefromcart = function(cartItem){
-
+    $scope.removefromcart = function (cartItem) {
       $http({
         method: "DELETE",
-        url: apiUrl = "",
+        url: apiUrl + "addtocart",
         withCredentials: true,
-        data: {}
+        data: { item_id: cartItem.item__pk },
       })
-        .then(function(response){
+        .then(function (response) {
           console.log(response);
+          display();
         })
-        .catch(function(error){
+        .catch(function (error) {
           console.log(error);
-        })
-    }
+        });
+    };
   },
 ]);

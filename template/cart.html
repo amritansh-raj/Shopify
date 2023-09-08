@@ -31,19 +31,19 @@
                             <h6 class="text-black mb-0">{{cartItem.item__product_name}}</h6>
                           </div>
                           <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-                            <button class="btn btn-link px-2"
-                              onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                              <i class="bi bi-dash"></i>
+                            <button class="btn btn-link px-2" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                                <i class="bi bi-dash"></i>
                             </button>
-      
-                            <input id="form1" min="0" name="quantity" value="1" type="number"
-                              class="form-control form-control-sm" />
-      
-                            <button class="btn btn-link px-2"
-                              onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                        
+                            <div class="input-group input-group-sm">
+                                <input id="form{{$index}}" min="1" name="quantity" value="{{cartItem.quantity}}" type="number"
+                                    class="form-control" style="width: 60px;" ng-model="cartItem.productQuantity"/>
+                            </div>
+
+                            <button class="btn btn-link px-2" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
                               <i class="bi bi-plus"></i>
                             </button>
-                          </div>
+                          </div>                        
                           <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
                             <h6 class="mb-0">₹{{cartItem.item__price}}</h6>
                           </div>
@@ -57,7 +57,7 @@
                         <hr class="my-4">
       
                         <div class="pt-5">
-                          <h6 class="mb-0"><a href="#!" class="text-body"><i class="bi bi-arrow-left"></i>Back to shop</a></h6>
+                          <h6 class="mb-0"><a ui-sref="Home" class="text-body"><i class="bi bi-arrow-left"></i>Back to shop</a></h6>
                         </div>
                       </div>
                     </div>
@@ -73,7 +73,7 @@
                         <hr class="my-4">
       
                         <button type="button" class="btn btn-dark btn-block btn-lg"
-                          data-mdb-ripple-color="dark" ng-click="order()">Buy now</button>
+                          data-mdb-ripple-color="dark" ng-click="order(cartItems)">Buy now</button>
       
                       </div>
                     </div>
