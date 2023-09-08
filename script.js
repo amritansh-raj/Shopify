@@ -812,58 +812,91 @@ myApp.controller("cartController", [
   "$http",
   "$state",
   "alertService",
-  function ($scope, $http, $state, alertService) {
-    $http({
-      method: "GET",
-      url: apiUrl + "addtocart",
-      withCredentials: true,
-    })
-      .then(function (response) {
-        console.log(response);
-        var cartItems = response.data;
+  "$rootScope",
+  function ($scope, $http, $state, $rootScope, alertService) {
 
-        if (cartItems) {
-          $scope.cartItems = cartItems;
-
-          $scope.totalPrice = cartItems.reduce(function (total, item) {
-            return total + item.item__price;
-          }, 0);
-        }
-
-        console.log($scope.cartItems);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-
-    $scope.order = function () {
+    function display(){
       $http({
-        method: "POST",
-        url: apiUrl + "ordercart/",
+        method: "GET",
+        url: apiUrl + "addtocart",
         withCredentials: true,
       })
         .then(function (response) {
           console.log(response);
+          var cartItems = response.data;
+
+          if (cartItems) {
+            $scope.cartItems = cartItems;
+
+            $scope.totalPrice = cartItems.reduce(function (total, item) {
+              return total + item.item__price;
+            }, 0);
+          } else {
+            $scope.emptyCart = "Add items to cart";
+          }
+
+          console.log($scope.cartItems);
+        })
+        .catch(function (error) {
+          console.log(error);
+        }); 
+    };
+
+    display();
+
+    $scope.order = function (cartItems) {
+      console.log(cartItems);
+
+      quantity = document.getElementById("form0").value;
+      console.log(quantity);
+
+      var cartData = [];
+
+      for (var i in cartItems) {
+        var cartItemData = {
+          item_id: cartItems[i].item__pk,
+          quantity: cartItems[i].quantity,
+        };
+        cartData.push(cartItemData);
+      }
+
+      console.log(cartData);
+
+      $http({
+        method: "POST",
+        url: apiUrl + "ordercart/",
+        withCredentials: true,
+        data: cartData,
+      })
+        .then(function (response) {
+          Swal.fire({
+            icon: "success",
+            title: "Order Placed Successfully",
+            text: "Your order has been successfully placed.",
+            showConfirmButton: false,
+            timer: 2000,
+          });
+          display();
         })
         .catch(function (error) {
           console.log(error);
         });
     };
 
-    $scope.removefromcart = function(cartItem){
-
+    $scope.removefromcart = function (cartItem) {
       $http({
         method: "DELETE",
-        url: apiUrl = "",
+        url: apiUrl + "addtocart",
         withCredentials: true,
-        data: {}
+        data: { item_id: cartItem.item__pk },
       })
-        .then(function(response){
+        .then(function (response) {
           console.log(response);
+          display();
         })
-        .catch(function(error){
+        .catch(function (error) {
           console.log(error);
-        })
-    }
+        });
+    };
   },
 ]);
