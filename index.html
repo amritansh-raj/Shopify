@@ -24,7 +24,7 @@
                 <input class="form-control mr-sm-2 search-input" type="search" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success my-2 my-sm-0 search-Btn" type="submit"> <i class="bi bi-search"></i>Search</button>
             </form>            
-            <ul class="navbar-nav ml-auto" ng-if="userLoggedIn">
+            <ul class="navbar-nav ml-auto">
                 <li class="nav-item cart-Btn">
                         <a class="nav-link cart-Btn" ui-sref="Cart" style="background-color: rgb(8, 130, 89); border-radius: 5px; color: white;">
                         <i class="bi bi-cart-fill"></i> Cart
@@ -42,18 +42,12 @@
                         <i class="bi bi-box-arrow-right"></i> Logout
                     </a>
                 </li>
-            </ul>            
+            </ul>
         </div>
     </nav>    
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <div class="banner">
-                    <img src="/media/posters/Artboard 1.png" class="img-fluid" alt="">
-                </div>
-            </div>
-        </div>
-    </div>    
+    <div class="banner">
+        <img src="/media/posters/Artboard 1.png" class="img-fluid" alt="">
+    </div>
     <div class="container-fluid">
         <div class="row">
             <div class="row d-flex justify-content-center align-items-center h-100">
@@ -63,23 +57,22 @@
                             <h2><a class="link-secondary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" ui-sref="Products">Our Products</a></h2>
                         </div>
                         <div class="row d-flex justify-content-center align-items-center">
-                            <div class="col-md-2 d-flex justify-content-center align-items-center" ng-repeat="product in products">
-                                <div class="card" style="width: 12rem;">
-                                    <img src="https://10.21.86.182:8000/media/{{product.image}}" class="card-img-top" style="max-height: 150px; max-width: 220px;" alt="...">
+                            <div class="col-md-3 d-flex justify-content-center align-items-center" ng-repeat="product in products">
+                                <div class="card" style="width: 18rem;">
+                                    <img src="https://10.21.86.182:8000/media/{{product.image}}" class="card-img-top" alt="...">
                                     <div class="card-body">
-                                        <h6 class="card-title" style="font-size: 0.8rem;">{{product.product_name}}</h6>
+                                        <h5 class="card-title">{{product.product_name}}</h5>
                                         <!-- <p class="card-text">{{product.description}}</p> -->
-                                        <p class="product-price" style="font-size: 0.8rem;">₹{{product.price}}/{{product.unit}}</p>
-                                        <button href="#" class="btn btn-primary btn-sm" style="background-color: rgb(8, 130, 89); border-color: rgb(8, 130, 89); font-size: 0.7rem;" ng-click="buyNow(product)">
+                                        <p class="product-price">₹{{product.price}}</p>
+                                        <button href="#" class="btn btn-primary" style="background-color: rgb(8, 130, 89); border-color: rgb(8, 130, 89);" ng-click="buyNow(product)">
                                             Buy Now
                                         </button>
-                                        <button class="btn btn-primary btn-sm" id="loginBtn" style="background-color: rgb(8, 130, 89); border-color: rgb(8, 130, 89); font-size: 0.7rem;" ng-click="addCart(product)">
+                                        <button class="btn btn-primary" id="loginBtn" style="background-color: rgb(8, 130, 89); border-color: rgb(8, 130, 89);" ng-click="addCart(product)">
                                             <i class="bi bi-cart-fill"></i> Add item
                                         </button>
                                     </div>                                    
                                 </div>
-                            </div>
-                                
+                            </div>    
                         </div>
                     </div>
                     
