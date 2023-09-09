@@ -12,7 +12,7 @@
 </head>
 <body ng-app="myApp" ng-controller="indexController" ui-view="" class="ng-scope">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand logo-Img" href="#">
+        <a class="navbar-brand logo-Img" ui-sref="Home" ng-click="clearSearch">
             <h2 style="color: rgb(8, 130, 89);">Shopify</h2>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,9 +21,9 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mr-auto"></ul>
             <form class="form-inline my-2 my-lg-0 search-form">
-                <input class="form-control mr-sm-2 search-input" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0 search-Btn" type="submit"> <i class="bi bi-search"></i>Search</button>
-            </form>            
+                <input class="form-control mr-sm-2 search-input" type="search" placeholder="Search" aria-label="Search" ng-model="searchTerm">
+                <button class="btn btn-outline-success my-2 my-sm-0 search-Btn" type="submit" ng-click="searchProducts()"> <i class="bi bi-search"></i>Search</button>
+            </form>
             <ul class="navbar-nav ml-auto" ng-if="userLoggedIn">
                 <li class="nav-item cart-Btn">
                         <a class="nav-link cart-Btn" ui-sref="Cart" style="background-color: rgb(8, 130, 89); border-radius: 5px; color: white;">
@@ -45,6 +45,8 @@
             </ul>            
         </div>
     </nav>    
+
+    <div ng-hide="length > 0">
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
@@ -68,7 +70,6 @@
                                     <img src="https://10.21.86.182:8000/media/{{product.image}}" class="card-img-top" style="max-height: 150px; max-width: 220px;" alt="...">
                                     <div class="card-body">
                                         <h6 class="card-title" style="font-size: 0.8rem;">{{product.product_name}}</h6>
-                                        <!-- <p class="card-text">{{product.description}}</p> -->
                                         <p class="product-price" style="font-size: 0.8rem;">₹{{product.price}}/{{product.unit}}</p>
                                         <button class="btn btn-primary btn-sm" style="background-color: rgb(8, 130, 89); border-color: rgb(8, 130, 89); font-size: 0.7rem;" ng-click="selectedProduct = product; openProductModal($index, selectedProduct)">
                                             Buy Now
@@ -81,14 +82,14 @@
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title" id="productModalLabel">{{ selectedProduct.Product_name }}</h5>
+                                                    <h5 class="modal-title" id="productModalLabel">{{ selectedProduct.product_name }}</h5>
                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="closeProductModal($index)">
                                                         <span aria-hidden="true">&times;</span>
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <img src="https://10.21.83.43:8000/media/{{selectedProduct.Image}}" class="img-fluid" alt="Product Image" />
-                                                    <p>Price: ₹{{ selectedProduct.Price }}</p>
+                                                    <img src="https://10.21.86.182:8000/media/{{selectedProduct.image}}" class="img-fluid" alt="Product Image" />
+                                                    <p>Price: ₹{{ selectedProduct.price }}</p>
                                                     <label for="quantity">Quantity:</label>
                                                     <input type="number" id="quantity" class="form-control" ng-model="selectedProductQuantity" min="1" value="1" ng-change="updateTotalPrice(selectedProductQuantity)">
                                                     <p>Total Price: ₹{{ totalPrice }}</p>
@@ -136,6 +137,28 @@
             </div>
         </div>
     </div>
+    </div>
+
+
+    <div ng-show="length > 0">
+        <h2>Search Results for </h2>
+        <div class="row filtered-products">
+          <div class="col-md-2 mb-3 d-flex justify-content-center" ng-repeat="filteredProduct in filteredProducts">
+            <div class="card" style="width: 14rem;">
+                <img src="https://10.21.86.182:8000/media/{{ filteredProduct.image }}" class="card-img-top" alt="..." height="200" width="200">
+                <div class="card-body">
+                    <h5 class="card-title" style="font-size: 16px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{filteredProduct.Product_name}}</h5>
+                    <p class="card-text">₹{{filteredProduct.price}}</p>
+                </div>
+                <div class="card-body d-flex justify-content-center">
+                    <button type="button" class="btn btn-primary btn-sm me-2" style="width: 100px; height: 40px;" ng-click="selectedProduct = product; openProductModal($index, selectedProduct)">Buy now</button>
+                    <button type="button" class="btn btn-primary btn-sm" ng-click="addtocart(product)" style="width: 100px; height: 40px;">Add to cart</button>
+                </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    
     <div class="footer">
         <div class="foot-heading d-flex justify-content-center align-items-center">
             <h1>Shopify<span class="com">.com</span></h1>

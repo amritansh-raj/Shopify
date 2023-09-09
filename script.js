@@ -37,6 +37,23 @@ myApp.config(function ($stateProvider, $urlRouterProvider) {
     });
 });
 
+myApp.service('AuthService', function() {
+  var userLoggedIn = false;
+
+  this.isUserLoggedIn = function() {
+      return userLoggedIn;
+  };
+
+  this.login = function() {
+      userLoggedIn = true;
+  };
+
+  this.logout = function() {
+      userLoggedIn = false;
+  };
+});
+
+
 myApp.factory("alertService", [
   "$rootScope",
   "$timeout",
@@ -83,8 +100,10 @@ myApp.controller("indexController", [
   "$http",
   "$state",
   "$window",
-  function ($scope, $http, $state, $window) {
-    $scope.userLoggedIn = false;
+  "$filter",
+  "Authservice",
+  function ($scope, $http, $state, $window, $filter, Authservice) {
+    $scope.userLoggedIn = AuthService.isUserLoggedIn();
 
     $http({
       method: "GET",
@@ -113,7 +132,6 @@ myApp.controller("indexController", [
       method: "GET",
       url: apiUrl + "getallitem/",
       withCredentials: true,
-      params: { id: 43 },
     })
       .then(function (response) {
         console.log(response);
@@ -129,18 +147,55 @@ myApp.controller("indexController", [
         console.log(error);
       });
 
-      $scope.selectedProduct = {};
+    $scope.searchTerm = "";
+    $scope.filteredProducts = [];
+
+    $scope.searchProducts = function () {
+      console.log("AS");
+      if ($scope.searchTerm) {
+        $scope.filteredProducts = $filter("filter")(
+          $scope.products,
+          $scope.searchTerm
+        );
+        $scope.length = $scope.filteredProducts.length;
+      }
+      if ($scope.length === 0) {
+        Swal.fire({
+          title: "Product/Category Not Found",
+          text: "No products or categories matching your search term were found.",
+          icon: "error",
+          position: "top",
+        }).then(function () {
+          $scope.$apply(function () {
+            $scope.searchTerm = "";
+          });
+        });
+        console.log($scope.filteredProducts);
+        console.log($scope.length);
+      }
+    };
+
+    $scope.clearSearch = function () {
+      $scope.searchTerm = "";
+      $scope.filteredProducts = [];
+      $scope.length = $scope.filteredProducts.length;
+      console.log($scope.length);
+    }; 
+
+    $scope.selectedProduct = {};
     $scope.selectedProductQuantity = 1;
 
     $scope.updateTotalPrice = function (selectedProductQuantity) {
       $scope.totalPrice =
-        $scope.selectedProduct.Price * selectedProductQuantity;
+        $scope.selectedProduct.price * selectedProductQuantity;
     };
 
     $scope.openProductModal = function (index, selectedProduct) {
       $("#productModal" + index).modal("show");
-      $scope.totalPrice = selectedProduct.Price;
+      $scope.totalPrice = selectedProduct.price;
       $scope.selectedProduct = selectedProduct;
+      console.log($scope.totalPrice);
+      console.log($scope.selectedProduct);  
     };
 
     $scope.buyProduct = function (
@@ -150,11 +205,11 @@ myApp.controller("indexController", [
     ) {
       $http({
         method: "POST",
-        url: apiUrl + "buyitem/",
+        url: apiUrl + "orderproduct/",
         withCredentials: true,
         data: {
-          productid: selectedProduct.id,
-          buy_quantity: selectedProductQuantity,
+          item_id: selectedProduct.id,
+          quantity: selectedProductQuantity,
         },
       })
         .then(function (response) {
@@ -176,23 +231,6 @@ myApp.controller("indexController", [
     $scope.closeProductModal = function (index) {
       $("#productModal" + index).modal("hide");
     };
-
-    // $scope.buyNow = function(product){
-
-    //   $http({
-    //     method: "POST",
-    //     url: apiUrl + "addtocart/",
-    //     withCredentials: true,
-    //     data: { item_id: product.id },
-    //   })
-    //     .then(function (response) {
-    //       $window.alert(response.data.message);
-    //     })
-    //     .catch(function (error) {
-    //       console.log(error);
-    //       $window.alert(error.data.message);
-    //     });
-    // }
 
     $scope.addCart = function (product) {
       $http({
