@@ -89,6 +89,7 @@ myApp.controller("indexController", [
     $http({
       method: "GET",
       url: apiUrl + "getcategory/",
+      withCredentials: true
     })
       .then(function (response) {
         console.log(response);
@@ -110,7 +111,7 @@ myApp.controller("indexController", [
 
     $http({
       method: "GET",
-      url: apiUrl + "getitem/",
+      url: apiUrl + "getallitem/",
       withCredentials: true,
       params: { id: 43 },
     })
@@ -128,22 +129,70 @@ myApp.controller("indexController", [
         console.log(error);
       });
 
-    $scope.buyNow = function(product){
+      $scope.selectedProduct = {};
+    $scope.selectedProductQuantity = 1;
 
+    $scope.updateTotalPrice = function (selectedProductQuantity) {
+      $scope.totalPrice =
+        $scope.selectedProduct.Price * selectedProductQuantity;
+    };
+
+    $scope.openProductModal = function (index, selectedProduct) {
+      $("#productModal" + index).modal("show");
+      $scope.totalPrice = selectedProduct.Price;
+      $scope.selectedProduct = selectedProduct;
+    };
+
+    $scope.buyProduct = function (
+      selectedProduct,
+      selectedProductQuantity,
+      index
+    ) {
       $http({
         method: "POST",
-        url: apiUrl + "addtocart/",
+        url: apiUrl + "buyitem/",
         withCredentials: true,
-        data: { item_id: product.id },
+        data: {
+          productid: selectedProduct.id,
+          buy_quantity: selectedProductQuantity,
+        },
       })
         .then(function (response) {
-          $window.alert(response.data.message);
+          $scope.closeProductModal(index);
+          Swal.fire({
+            icon: "success",
+            title: "Order Placed Successfully",
+            text: "Your order has been successfully placed.",
+            showConfirmButton: false,
+            timer: 2000,
+          });
+          console.log(response);
         })
         .catch(function (error) {
           console.log(error);
-          $window.alert(error.data.message);
         });
-    }
+    };
+
+    $scope.closeProductModal = function (index) {
+      $("#productModal" + index).modal("hide");
+    };
+
+    // $scope.buyNow = function(product){
+
+    //   $http({
+    //     method: "POST",
+    //     url: apiUrl + "addtocart/",
+    //     withCredentials: true,
+    //     data: { item_id: product.id },
+    //   })
+    //     .then(function (response) {
+    //       $window.alert(response.data.message);
+    //     })
+    //     .catch(function (error) {
+    //       console.log(error);
+    //       $window.alert(error.data.message);
+    //     });
+    // }
 
     $scope.addCart = function (product) {
       $http({
@@ -391,28 +440,32 @@ myApp.controller("managerController", [
 
     $scope.categories = [];
 
-    $http({
-      method: "GET",
-      url: apiUrl + "addcategory/",
-      withCredentials: true,
-    })
-      .then(function (response) {
-        console.log(response);
-        var categories = response.data;
-
-        if (categories) {
-          $scope.categories = categories;
-        }
-
-        console.log($scope.categories);
+    function display() {
+      $http({
+        method: "GET",
+        url: apiUrl + "addcategory/",
+        withCredentials: true,
       })
-      .catch(function (error) {
-        if (error.data && error.data.message) {
-          // $window.alert(error.data.message);
-        } else {
-          // $window.alert("An error occured. Please try again");
-        }
-      });
+        .then(function (response) {
+          console.log(response);
+          var categories = response.data;
+  
+          if (categories) {
+            $scope.categories = categories;
+          }
+  
+          console.log($scope.categories);
+        })
+        .catch(function (error) {
+          if (error.data && error.data.message) {
+            // $window.alert(error.data.message);
+          } else {
+            // $window.alert("An error occured. Please try again");
+          }
+        });
+    }
+
+    display();
 
     $scope.displayProducts = function (category) {
       $http({
@@ -429,6 +482,7 @@ myApp.controller("managerController", [
             category.products = products;
           }
 
+          display();
           console.log(category.products);
         })
         .catch(function (error) {
@@ -470,6 +524,7 @@ myApp.controller("managerController", [
           })
             .then(function (response) {
               console.log(response);
+              display();
             })
             .catch(function (error) {
               console.error(error);
@@ -843,6 +898,42 @@ myApp.controller("cartController", [
     };
 
     display();
+
+    $scope.updateQuantity = function(cartItem){
+      console.log("triggered");
+      changeQuantity(cartItem);
+      updateProductPrice(cartItem);
+      updateTotalPrice();
+    }
+
+    function changeQuantity(cartItem) {
+      $http({
+        method: "PUT",
+        url: apiUrl + "ordercart/",
+        withCredentials: true,
+        data : {
+          item_id : cartItem.item__pk,
+          quantity : cartItem.productQuantity
+        }
+      })
+        .then(function(response){
+          console.log(response);
+        })
+        .catch(function(error){
+          console.log(error);
+        })
+    };
+
+    function updateProductPrice(cartItem) {
+      $scope.cartItem.item__price = cartItem.item__price * cartItem.productQuantity;
+    }
+
+    function updateTotalPrice() {
+      // $scope.totalPrice = $scope.cartItems.reduce(function (total, item) {
+      //   return total + item.item__price * item.(backend key for product quantity);
+      // }, 0);
+      console.log($scope.totalPrice);
+    };
 
     $scope.order = function (cartItems) {
       console.log(cartItems);
