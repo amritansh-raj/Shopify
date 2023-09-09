@@ -42,7 +42,7 @@
 
                         <div class="input-group input-group-sm">
                           <input id="form{{$index}}" min="1" name="quantity" value="{{cartItem.quantity}}" type="number"
-                            class="form-control" style="width: 60px" ng-model="cartItem.productQuantity"
+                            class="form-control" style="width: 60px" ng-model="cartItem.quantity"
                             ng-change="updateQuantity(cartItem)" />
                         </div>
 
@@ -66,7 +66,7 @@
 
                     <div class="pt-5">
                       <h6 class="mb-0">
-                        <a ui-sref="Home" class="text-body"><i class="bi bi-arrow-left"></i>Back to shop</a>
+                        <a ui-sref="Home" class="text-body" ng-click="userLoggedIn()"><i class="bi bi-arrow-left"></i>Back to shop</a>
                       </h6>
                     </div>
                   </div>
@@ -83,7 +83,7 @@
                     <hr class="my-4" />
 
                     <button type="button" class="btn btn-dark btn-block btn-lg" data-mdb-ripple-color="dark"
-                      ng-click="order(cartItems)">
+                      ng-click="order()">
                       Buy now
                     </button>
                   </div>

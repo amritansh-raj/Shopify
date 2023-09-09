@@ -87,9 +87,12 @@ myApp.controller("indexController", [
   "$rootScope",
   function ($scope, $http, $state, $window, $filter, $rootScope) {
 
+    console.log($rootScope.userLoggedIn);
+
     if ($rootScope.userLoggedIn === undefined) {
       $rootScope.userLoggedIn = false;
     }
+    
     console.log($rootScope.userLoggedIn);
 
     $http({
@@ -910,8 +913,9 @@ myApp.controller("cartController", [
             $scope.cartItems = cartItems;
 
             $scope.totalPrice = cartItems.reduce(function (total, item) {
-              return total + item.item__price;
+              return total + item.item__price * item.quantity;
             }, 0);
+
           } else {
             $scope.emptyCart = "Add items to cart";
           }
@@ -926,9 +930,8 @@ myApp.controller("cartController", [
     display();
 
     $scope.updateQuantity = function(cartItem){
-      console.log("triggered");
+      console.log(cartItem);
       changeQuantity(cartItem);
-      updateProductPrice(cartItem);
       updateTotalPrice();
     }
 
@@ -939,7 +942,7 @@ myApp.controller("cartController", [
         withCredentials: true,
         data : {
           item_id : cartItem.item__pk,
-          quantity : cartItem.productQuantity
+          quantity : cartItem.quantity
         }
       })
         .then(function(response){
@@ -950,40 +953,19 @@ myApp.controller("cartController", [
         })
     };
 
-    function updateProductPrice(cartItem) {
-      $scope.cartItem.item__price = cartItem.item__price * cartItem.productQuantity;
-    }
-
     function updateTotalPrice() {
-      // $scope.totalPrice = $scope.cartItems.reduce(function (total, item) {
-      //   return total + item.item__price * item.(backend key for product quantity);
-      // }, 0);
+      $scope.totalPrice = $scope.cartItems.reduce(function (total, item) {
+        return total + item.item__price * item.quantity;
+      }, 0);
       console.log($scope.totalPrice);
     };
 
-    $scope.order = function (cartItems) {
-      console.log(cartItems);
-
-      quantity = document.getElementById("form0").value;
-      console.log(quantity);
-
-      var cartData = [];
-
-      for (var i in cartItems) {
-        var cartItemData = {
-          item_id: cartItems[i].item__pk,
-          quantity: cartItems[i].quantity,
-        };
-        cartData.push(cartItemData);
-      }
-
-      console.log(cartData);
+    $scope.order = function () {
 
       $http({
         method: "POST",
         url: apiUrl + "ordercart/",
         withCredentials: true,
-        data: cartData,
       })
         .then(function (response) {
           Swal.fire({
@@ -1015,5 +997,10 @@ myApp.controller("cartController", [
           console.log(error);
         });
     };
+
+    $scope.userLoggedIn = function(){
+      $rootScope.userLoggedIn = true;
+      console.log($rootScope.userLoggedIn);
+    }
   },
 ]);
