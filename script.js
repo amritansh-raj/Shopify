@@ -37,23 +37,6 @@ myApp.config(function ($stateProvider, $urlRouterProvider) {
     });
 });
 
-myApp.service('AuthService', function() {
-  var userLoggedIn = false;
-
-  this.isUserLoggedIn = function() {
-      return userLoggedIn;
-  };
-
-  this.login = function() {
-      userLoggedIn = true;
-  };
-
-  this.logout = function() {
-      userLoggedIn = false;
-  };
-});
-
-
 myApp.factory("alertService", [
   "$rootScope",
   "$timeout",
@@ -101,9 +84,13 @@ myApp.controller("indexController", [
   "$state",
   "$window",
   "$filter",
-  "Authservice",
-  function ($scope, $http, $state, $window, $filter, Authservice) {
-    $scope.userLoggedIn = AuthService.isUserLoggedIn();
+  "$rootScope",
+  function ($scope, $http, $state, $window, $filter, $rootScope) {
+
+    if ($rootScope.userLoggedIn === undefined) {
+      $rootScope.userLoggedIn = false;
+    }
+    console.log($rootScope.userLoggedIn);
 
     $http({
       method: "GET",
@@ -300,7 +287,7 @@ myApp.controller("indexController", [
             withCredentials: true,
           })
             .then(function (response) {
-              $scope.userLoggedIn = true;
+              $rootScope.userLoggedIn = true;
 
               var verify = response.data.is_superuser;
 
@@ -328,7 +315,7 @@ myApp.controller("indexController", [
     };
 
     $scope.logout = function () {
-      $scope.userLoggedIn = false;
+     $rootScope.userLoggedIn  = false;
 
       $http({
         method: "GET",
@@ -428,7 +415,7 @@ myApp.controller("indexController", [
             data: registerData,
           })
             .then(function (response) {
-              $scope.userLoggedIn = true;
+              $rootScope.userLoggedIn = true;
               console.log(response);
             })
             .catch(function (error) {
@@ -473,7 +460,8 @@ myApp.controller("managerController", [
   "$http",
   "$state",
   "alertService",
-  function ($scope, $http, $state, alertService) {
+  "$rootScope",
+  function ($scope, $http, $state, alertService, $rootScope) {
     alertService.add("success", "Welcome to your dashboard", 1);
 
     $scope.categories = [];
@@ -861,7 +849,7 @@ myApp.controller("managerController", [
       })
         .then(function (response) {
           console.log("Logout response:", response);
-          $scope.userLoggedIn = false;
+          $rootScope.userLoggedIn = false;
           $state.go("Home");
         })
         .catch(function (error) {
