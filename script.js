@@ -1,5 +1,7 @@
 var myApp = angular.module("myApp", ["ui.router", "ngCookies"]);
-var apiUrl = "https://10.21.86.182:8000/shopify/";
+// var apiUrl = "https://10.21.86.182:8000/shopify/";
+var apiUrl = "https://10.21.85.102:8000/";
+
 
 myApp.config(function ($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise("/Home");
@@ -86,19 +88,31 @@ myApp.controller("indexController", [
   "$filter",
   "$rootScope",
   function ($scope, $http, $state, $window, $filter, $rootScope) {
-
     console.log($rootScope.userLoggedIn);
 
     if ($rootScope.userLoggedIn === undefined) {
       $rootScope.userLoggedIn = false;
     }
-    
+
     console.log($rootScope.userLoggedIn);
 
     $http({
       method: "GET",
+      url: apiUrl + "",
+      withCredentials: true,
+    })
+      .then(function(response){
+        console.log(response.data);
+        $scope.userStatus = response.data.message;
+      })
+      .catch(function(error){
+        console.log(error);
+      })
+
+    $http({
+      method: "GET",
       url: apiUrl + "getcategory/",
-      withCredentials: true
+      withCredentials: true,
     })
       .then(function (response) {
         console.log(response);
@@ -141,7 +155,6 @@ myApp.controller("indexController", [
     $scope.filteredProducts = [];
 
     $scope.searchProducts = function () {
-      console.log("AS");
       if ($scope.searchTerm) {
         $scope.filteredProducts = $filter("filter")(
           $scope.products,
@@ -170,7 +183,7 @@ myApp.controller("indexController", [
       $scope.filteredProducts = [];
       $scope.length = $scope.filteredProducts.length;
       console.log($scope.length);
-    }; 
+    };
 
     $scope.selectedProduct = {};
     $scope.selectedProductQuantity = 1;
@@ -181,11 +194,12 @@ myApp.controller("indexController", [
     };
 
     $scope.openProductModal = function (index, selectedProduct) {
+      console.log(selectedProduct);
+      console.log(index);
       $("#productModal" + index).modal("show");
       $scope.totalPrice = selectedProduct.price;
       $scope.selectedProduct = selectedProduct;
       console.log($scope.totalPrice);
-      console.log($scope.selectedProduct);  
     };
 
     $scope.buyProduct = function (
@@ -300,6 +314,12 @@ myApp.controller("indexController", [
               if (superuser) {
                 $state.go("manager");
               } else {
+                Swal.fire({
+                  icon: "success",
+                  title: "You are logged in",
+                  showConfirmButton: false,
+                  timer: 2000,
+                })
                 $state.go("Home");
               }
             })
@@ -318,7 +338,7 @@ myApp.controller("indexController", [
     };
 
     $scope.logout = function () {
-     $rootScope.userLoggedIn  = false;
+      $rootScope.userLoggedIn = false;
 
       $http({
         method: "GET",
@@ -326,6 +346,12 @@ myApp.controller("indexController", [
         withCredentials: true,
       })
         .then(function (response) {
+          Swal.fire({
+            icon: "success",
+            title: "You are logged out",
+            showConfirmButton: false,
+            timer: 2000,
+          })
           console.log(response);
         })
         .catch(function (error) {
@@ -398,6 +424,10 @@ myApp.controller("indexController", [
             return;
           }
 
+          if (!validatePass(password)){
+            Swal.showValidationMessage("Invali password pattern");
+          }
+
           if (password !== confirmPassword) {
             Swal.showValidationMessage("Password does not match");
             return;
@@ -409,7 +439,6 @@ myApp.controller("indexController", [
             contact: contact,
             address: address,
             password: password,
-            confirmPassword: confirmPassword,
           };
 
           $http({
@@ -435,7 +464,7 @@ myApp.controller("indexController", [
     };
 
     function validateEmail(email) {
-      var emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      var emailPattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
       return emailPattern.test(email);
     }
 
@@ -444,16 +473,20 @@ myApp.controller("indexController", [
       return contactPattern.test(contact);
     }
 
+    function validatePass(password) {
+      var passPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+      return passPattern.test(password);
+    }
+
     // $(document).on("click", "#loginBtn", function (event) {
     //   event.preventDefault();
 
-    //   console.log($scope.userLoggedIn);
-    //   console.log(!$scope.userLoggedIn);
+    //   console.log($rootScope.userLoggedIn);
+    //   console.log(!$rootScope.userLoggedIn);
 
-    //   if($scope.userLoggedIn){
+    //   if ($scope.userLoggedIn) {
     //     $scope.showLoginPopup();
     //   }
-
     // });
   },
 ]);
@@ -478,11 +511,11 @@ myApp.controller("managerController", [
         .then(function (response) {
           console.log(response);
           var categories = response.data;
-  
+
           if (categories) {
             $scope.categories = categories;
           }
-  
+
           console.log($scope.categories);
         })
         .catch(function (error) {
@@ -496,6 +529,7 @@ myApp.controller("managerController", [
 
     display();
 
+    
     $scope.displayProducts = function (category) {
       $http({
         method: "GET",
@@ -511,7 +545,7 @@ myApp.controller("managerController", [
             category.products = products;
           }
 
-          display();
+          // display();
           console.log(category.products);
         })
         .catch(function (error) {
@@ -562,11 +596,11 @@ myApp.controller("managerController", [
       });
     };
 
-    $scope.showModal = function(accordionIndex) {
+    $scope.showModal = function (accordionIndex) {
       $("#addProductModal" + accordionIndex).modal("show");
     };
 
-    $scope.hideModal = function(accordionIndex) {
+    $scope.hideModal = function (accordionIndex) {
       $("#addProductModal" + accordionIndex).modal("hide");
     };
 
@@ -591,10 +625,10 @@ myApp.controller("managerController", [
 
     $scope.product = {};
 
-    $scope.addProduct = function (category,index) {
-
+    $scope.addProduct = function (category, index) {
       console.log("Index:", index);
-      var productImage = document.getElementById("productImage" + index).files[0];
+      var productImage = document.getElementById("productImage" + index)
+        .files[0];
       console.log("productImage:", productImage);
 
       var manufacturingDate = new Date($scope.product.manufacturingDate);
@@ -652,7 +686,6 @@ myApp.controller("managerController", [
     };
 
     $scope.editProduct = function (product, accordionIndex, index) {
-      
       $("#editProductModal" + accordionIndex + index).modal("show");
 
       console.log("#editProductModal" + accordionIndex + index);
@@ -679,10 +712,14 @@ myApp.controller("managerController", [
       console.log("Edit button clicked for product:", product);
     };
 
-    $scope.cancelProductEdit = function (editingProduct,accordionIndex, index) {
+    $scope.cancelProductEdit = function (
+      editingProduct,
+      accordionIndex,
+      index
+    ) {
       console.log(editingProduct);
 
-      $("#editProductModal" +  accordionIndex + index).modal("hide");
+      $("#editProductModal" + accordionIndex + index).modal("hide");
 
       editingProduct.editMode = false;
       editingProduct.updateName = editingProduct.product_name;
@@ -701,7 +738,7 @@ myApp.controller("managerController", [
       console.log("Edit cancelled for product:", editingProduct);
     };
 
-    $scope.saveProductEdit = function (product) {
+    $scope.saveProductEdit = function (product, accordionIndex, index) {
       console.log(product);
 
       if (product.updateName) {
@@ -756,6 +793,11 @@ myApp.controller("managerController", [
         headers: { "Content-Type": undefined },
       })
         .then(function (response) {
+          $("#editProductModal" + accordionIndex + index).modal("hide");
+          product.editMode = false;
+
+          // console.log("#editProductModal" + accordionIndex + index);
+
           console.log(response);
         })
         .catch(function (error) {
@@ -821,6 +863,7 @@ myApp.controller("managerController", [
         headers: { "Content-Type": undefined },
       })
         .then(function (response) {
+          display()
           console.log(response);
         })
         .catch(function (error) {
@@ -837,6 +880,7 @@ myApp.controller("managerController", [
       })
         .then(function (response) {
           console.log("deleted");
+          display();
           alertService.add("success", "Category deleted succesfully", 2);
         })
         .catch(function (error) {
@@ -868,26 +912,25 @@ myApp.controller("productController", [
   "$state",
   "alertService",
   function ($scope, $http, $state, alertService) {
-
     $http({
       method: "GET",
       url: apiUrl + "getallitem/",
       withCredentials: true,
     })
-      .then(function(response){
-        console.log(response)
+      .then(function (response) {
+        console.log(response);
 
         var allproducts = response.data;
 
-        if(allproducts){
-          $scope.allproducts = allproducts
+        if (allproducts) {
+          $scope.allproducts = allproducts;
         }
 
-        console.log($scope.allproducts)
+        console.log($scope.allproducts);
       })
-      .catch(function(error){
+      .catch(function (error) {
         console.log(error);
-      })
+      });
   },
 ]);
 
@@ -898,8 +941,9 @@ myApp.controller("cartController", [
   "alertService",
   "$rootScope",
   function ($scope, $http, $state, $rootScope, alertService) {
+    console.log($rootScope.userLoggedIn);
 
-    function display(){
+    function display() {
       $http({
         method: "GET",
         url: apiUrl + "addtocart",
@@ -915,7 +959,6 @@ myApp.controller("cartController", [
             $scope.totalPrice = cartItems.reduce(function (total, item) {
               return total + item.item__price * item.quantity;
             }, 0);
-
           } else {
             $scope.emptyCart = "Add items to cart";
           }
@@ -924,44 +967,43 @@ myApp.controller("cartController", [
         })
         .catch(function (error) {
           console.log(error);
-        }); 
-    };
+        });
+    }
 
     display();
 
-    $scope.updateQuantity = function(cartItem){
+    $scope.updateQuantity = function (cartItem) {
       console.log(cartItem);
       changeQuantity(cartItem);
       updateTotalPrice();
-    }
+    };
 
     function changeQuantity(cartItem) {
       $http({
         method: "PUT",
         url: apiUrl + "ordercart/",
         withCredentials: true,
-        data : {
-          item_id : cartItem.item__pk,
-          quantity : cartItem.quantity
-        }
+        data: {
+          item_id: cartItem.item__pk,
+          quantity: cartItem.quantity,
+        },
       })
-        .then(function(response){
+        .then(function (response) {
           console.log(response);
         })
-        .catch(function(error){
+        .catch(function (error) {
           console.log(error);
-        })
-    };
+        });
+    }
 
     function updateTotalPrice() {
       $scope.totalPrice = $scope.cartItems.reduce(function (total, item) {
         return total + item.item__price * item.quantity;
       }, 0);
       console.log($scope.totalPrice);
-    };
+    }
 
     $scope.order = function () {
-
       $http({
         method: "POST",
         url: apiUrl + "ordercart/",
@@ -998,9 +1040,9 @@ myApp.controller("cartController", [
         });
     };
 
-    $scope.userLoggedIn = function(){
+    $scope.userLoggedIn = function () {
       $rootScope.userLoggedIn = true;
       console.log($rootScope.userLoggedIn);
-    }
+    };
   },
 ]);

@@ -45,8 +45,9 @@
   <div>
     <section class="vh-100" style="background-color: #eee">
       <div class="container h-100" style="padding-top: 100px">
-        
-        <div class="accordion accordion-flush" id="accordionFlushExample{{$index}}" ng-repeat="(accordionIndex, category) in categories">
+
+        <div class="accordion accordion-flush" id="accordionFlushExample{{$index}}"
+          ng-repeat="(accordionIndex, category) in categories">
           <div class="accordion-item">
             <h2 class="accordion-header" id="flush-heading{{$index}}">
               <div class="row mt-3">
@@ -182,87 +183,89 @@
                             ng-click="editProduct(product, accordionIndex, $index)">
                             <i class="bi bi-pencil-square"></i> Edit
                           </button>
-                          <button class="btn btn-outline-secondary btn-block" type="button" ng-click="delProduct(product)">
+                          <button class="btn btn-outline-secondary btn-block" type="button"
+                            ng-click="delProduct(product)">
                             <i class="bi bi-trash"></i> Del
                           </button>
                         </div>
                       </div>
                     </div>
-                    <div class="modal fade" id="editProductModal{{accordionIndex}}{{$index}}" tabindex="-1" role="dialog"
-                    aria-labelledby="editProductModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title" id="editProductModalLabel">
-                            Edit Product
-                          </h5>
-                          <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"
-                            ng-click="cancelProductEdit(editingProduct , accordionIndex, $index)">
-                          </button>
-                        </div>
-                        <div class="modal-body">
+                    <div class="modal fade" id="editProductModal{{accordionIndex}}{{$index}}" tabindex="-1"
+                      role="dialog" aria-labelledby="editProductModalLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="editProductModalLabel">
+                              Edit Product
+                            </h5>
+                            <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"
+                              ng-click="cancelProductEdit(editingProduct , accordionIndex, $index)">
+                            </button>
+                          </div>
+                          <div class="modal-body">
                             <form ng-submit="saveProductEditModal()">
-                            <div class="form-group">
+                              <div class="form-group">
                                 <label for="productName">Product Name</label>
                                 <input type="text" class="form-control" id="productName"
-                                    ng-model="editingProduct.updateName" required>
-                            </div>
-                            <div class="form-group">
+                                  ng-model="editingProduct.updateName" required>
+                              </div>
+                              <div class="form-group">
                                 <label for="productDescription">Product Description</label>
-                                <textarea class="form-control" id="productDescription" ng-model="editingProduct.updateDescription"
-                                    rows="3"></textarea>
-                            </div>
-                            <div class="form-group">
+                                <textarea class="form-control" id="productDescription"
+                                  ng-model="editingProduct.updateDescription" rows="3"></textarea>
+                              </div>
+                              <div class="form-group">
                                 <label for="productPrice">Product Price Per Unit</label>
-                                <input type="number" class="form-control" id="productPrice" ng-model="editingProduct.updatePrice"
-                                    required>
-                            </div>
-                            <div class="form-group">
+                                <input type="number" class="form-control" id="productPrice"
+                                  ng-model="editingProduct.updatePrice" required>
+                              </div>
+                              <div class="form-group">
                                 <label for="productQuantity">Product Quantity</label>
                                 <input type="number" class="form-control" id="productQuantity"
-                                    ng-model="editingProduct.updateQuantity" required>
-                            </div>
-                            <div class="form-group">
+                                  ng-model="editingProduct.updateQuantity" required>
+                              </div>
+                              <div class="form-group">
                                 <label for="productUnit">Product Unit</label>
                                 <select class="form-control" id="productUnit" ng-model="editingProduct.updateUnit">
-                                    <option value="kg">kg</option>
-                                    <option value="ltr">ltr</option>
-                                    <option value="qty">qty</option>
+                                  <option value="kg">kg</option>
+                                  <option value="ltr">ltr</option>
+                                  <option value="qty">qty</option>
                                 </select>
-                            </div>
-                            <div class="form-group">
+                              </div>
+                              <div class="form-group">
                                 <label for="productManufacturingDate">Manufacturing Date</label>
                                 <input type="date" class="form-control" id="productManufacturingDate"
-                                    ng-model="editingProduct.updateMfgDate">
-                            </div>
-                            <div class="form-group">
+                                  ng-model="editingProduct.updateMfgDate">
+                              </div>
+                              <div class="form-group">
                                 <label for="productExpiryDate">Expiry Date</label>
                                 <input type="date" class="form-control" id="productExpiryDate"
-                                    ng-model="editingProduct.updateExpDate">
-                            </div>
-                            <div class="form-group">
+                                  ng-model="editingProduct.updateExpDate">
+                              </div>
+                              <div class="form-group">
                                 <label for="productImage">Product Image</label>
                                 <input type="file" class="form-control" id="editingProductImage" accept="image/*"
-                                    ng-model="editingProduct.updateImage">
-                            </div>
-                            <div class="modal-footer">
+                                  ng-model="editingProduct.updateImage">
+                              </div>
+                              <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal"
-                                    ng-click="cancelProductEdit(editingProduct , accordionIndex, $index)">
-                                    Close
+                                  ng-click="cancelProductEdit(editingProduct , accordionIndex, $index)">
+                                  Close
                                 </button>
-                                <button type="button" class="btn btn-primary" ng-click="saveProductEdit(editingProduct)">
-                                    Save Changes
+                                <button type="button" class="btn btn-primary"
+                                  ng-click="saveProductEdit(editingProduct,accordionIndex, $index)">
+                                  Save Changes
                                 </button>
-                            </div>
-                        </form>                        
+                              </div>
+                            </form>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
                   </div>
 
-                  
+
                 </div>
               </div>
             </div>
